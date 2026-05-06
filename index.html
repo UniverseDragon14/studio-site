@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Universal Dragon Studio | AI Websites, Apps & Security Systems</title>
-  <meta name="description" content="Universal Dragon Studio by Aslam builds low-cost AI websites, apps, automation and defensive security systems for small businesses." />
+  <title>UD Studio | AI Websites, Apps & Security Systems</title>
+  <meta name="description" content="UD Studio by Aslam builds low-cost AI websites, apps, automation and defensive security systems for small businesses." />
   <style>
     :root{
       --bg:#050507;
@@ -194,7 +194,7 @@
 <body>
   <header>
     <div class="nav">
-      <div class="brand">🐉 Universal Dragon Studio</div>
+      <div class="brand">🐉 UD Studio</div>
       <div class="badge">AI Websites • Apps • Defensive Security</div>
     </div>
   </header>
@@ -323,15 +323,205 @@
         <h2>Start your project</h2>
         <p class="lead">Send your idea. We will reply with a simple plan, price, and delivery steps.</p>
         <div class="btns">
-          <a class="btn primary" href="mailto:univercialdragon@gmail.com?subject=Universal Dragon Studio Project Request">Email Universal Dragon Studio</a>
+          <a class="btn primary" href="mailto:univercialdragon@gmail.com?subject=UD Studio Project Request">Email UD Studio</a>
           <a class="btn secondary" href="https://udos.universaldragon.com">View UDOS Demo</a>
         </div>
       </div>
     </section>
+  
+    <section id="builder">
+      <h2 class="section-title">UD Studio Builder</h2>
+      <p class="section-sub">
+        Discuss normally. When the idea is ready, promote it into a build plan, create the structure, then run the project.
+      </p>
+
+      <div class="builder-shell">
+        <div class="builder-left">
+          <h3>Discuss</h3>
+          <p>Use this side to explain the idea normally.</p>
+          <textarea id="ideaBox" placeholder="Example: I need an app for booking service customers, with login, pricing, WhatsApp contact, and admin dashboard."></textarea>
+
+          <div class="builder-actions">
+            <button onclick="studioPromote()">Promote Idea</button>
+            <button onclick="studioCreate()">Create Plan</button>
+            <button onclick="studioRun()">Run Preview</button>
+          </div>
+        </div>
+
+        <div class="builder-right">
+          <h3>Thinking / Build Output</h3>
+          <div id="builderOutput" class="builder-output">
+STATUS:
+Waiting for idea.
+
+NEXT ACTION:
+Write your project idea on the Discuss side, then press Promote Idea.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <style>
+      .builder-shell{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:18px;
+        margin-top:20px;
+      }
+      .builder-left,.builder-right{
+        background:var(--panel);
+        border:1px solid var(--line);
+        border-radius:22px;
+        padding:22px;
+      }
+      .builder-left h3,.builder-right h3{
+        color:var(--gold);
+        margin-bottom:10px;
+      }
+      .builder-left p{
+        color:var(--muted);
+        margin-bottom:14px;
+      }
+      #ideaBox{
+        width:100%;
+        min-height:220px;
+        background:#050507;
+        color:var(--text);
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:16px;
+        font-size:16px;
+        resize:vertical;
+      }
+      .builder-actions{
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+        margin-top:14px;
+      }
+      .builder-actions button{
+        border:0;
+        border-radius:13px;
+        padding:12px 16px;
+        color:white;
+        font-weight:800;
+        background:linear-gradient(135deg,var(--fire),#b91c1c);
+      }
+      .builder-output{
+        white-space:pre-wrap;
+        min-height:280px;
+        background:#050507;
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:16px;
+        color:var(--text);
+        font-size:16px;
+      }
+      @media(max-width:800px){
+        .builder-shell{grid-template-columns:1fr}
+      }
+    </style>
+
+    <script>
+      function getIdea(){
+        return document.getElementById("ideaBox").value.trim();
+      }
+
+      function setOutput(text){
+        document.getElementById("builderOutput").innerText = text;
+      }
+
+      function studioPromote(){
+        const idea = getIdea();
+        if(!idea){
+          setOutput("STATUS:\\nNo idea entered.\\n\\nNEXT ACTION:\\nWrite your project idea first.");
+          return;
+        }
+
+        setOutput(
+`STATUS:
+Idea promoted into UD Studio thinking mode.
+
+PROJECT IDEA:
+${idea}
+
+THINKING:
+This can become a real digital product.
+
+NEXT ACTION:
+Press Create Plan to convert this into pages, features, pricing, and build steps.`
+        );
+      }
+
+      function studioCreate(){
+        const idea = getIdea();
+        if(!idea){
+          setOutput("STATUS:\\nNo idea entered.\\n\\nNEXT ACTION:\\nWrite your project idea first.");
+          return;
+        }
+
+        setOutput(
+`STATUS:
+Build plan created.
+
+PROJECT:
+${idea}
+
+SUGGESTED STRUCTURE:
+1. Home / Landing page
+2. Service or product section
+3. Contact / WhatsApp action
+4. Admin or dashboard module if needed
+5. Mobile-friendly layout
+
+FEATURES:
+- Clean public website/app UI
+- Fast loading
+- Contact/action button
+- Future AI assistant support
+- Safe backend option
+
+PRICE ESTIMATE:
+Starter: 149 AED
+Business: 299 AED
+AI/System: 599 AED+
+
+NEXT ACTION:
+Send this plan to UD Studio for build approval.`
+        );
+      }
+
+      function studioRun(){
+        const idea = getIdea();
+        if(!idea){
+          setOutput("STATUS:\\nNo idea entered.\\n\\nNEXT ACTION:\\nWrite your project idea first.");
+          return;
+        }
+
+        setOutput(
+`STATUS:
+Preview mode prepared.
+
+RUN:
+This first version does not auto-deploy yet.
+
+NEXT ACTION:
+UD Studio can manually build the first working version, then connect:
+- GitHub
+- Cloudflare domain
+- Backend server
+- AI brain if required
+
+CONTACT:
+Email: univercialdragon@gmail.com`
+        );
+      }
+    </script>
+
   </main>
 
   <footer>
-    Universal Dragon Studio — created by Aslam. Practical AI, websites, apps, and defensive systems.
+    UD Studio — created by Aslam. Practical AI, websites, apps, and defensive systems.
   </footer>
 </body>
 </html>
