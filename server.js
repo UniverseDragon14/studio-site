@@ -45,12 +45,23 @@ Rules:
 Customer idea:
 ${idea}
 
-Return a real build blueprint in this exact format:
+Return a customer-facing app/web build blueprint only.
+
+STRICT RULES:
+- Do NOT output raw code.
+- Do NOT output terminal commands.
+- Do NOT output API keys, backend secrets, private IPs, or internal file paths.
+- Do NOT explain hacking or offensive security.
+- Only describe the app/website/system that will be built.
+- Keep it professional like Replit/Vercel/AI Studio product planning.
+- Mention that implementation files are prepared internally by UD Studio after approval.
+
+Return in this exact format:
 
 STATUS:
 PROJECT NAME:
-PROJECT TYPE:
-TARGET USER:
+PRODUCT TYPE:
+TARGET USERS:
 BEST PACKAGE:
 PRICE ESTIMATE AED:
 DELIVERY TIME:
@@ -58,67 +69,27 @@ DELIVERY TIME:
 PROMOTED IDEA:
 Explain the idea in 3 clear lines.
 
-TECH STACK:
-List the best technologies.
+APP / WEBSITE SCREENS:
+List pages/screens the customer will get.
 
-PROJECT STRUCTURE:
-Show folders and files.
+MAIN FEATURES:
+List practical product features.
 
-FILES TO CREATE:
-List every file needed.
+DESIGN STYLE:
+Describe look and feel.
 
-CORE FEATURES:
-List practical features.
+AI / AUTOMATION:
+Mention only safe useful AI features.
 
-BUILD COMMANDS:
-Give terminal-ready commands.
+SECURITY / PRIVACY:
+Mention defensive privacy-safe setup.
 
-RUN COMMANDS:
-Give terminal-ready commands.
-
-DEPLOY COMMANDS:
-Give GitHub/Cloudflare deployment steps.
-
-RPi5 / MOBILE NOTES:
-Give optimization notes if useful.
-
-SAFETY RULES:
-- No API keys in frontend
-- No private IPs in public site
-- Include .gitignore
-- Include errorHandler.js
-- Include rollback.js
-- Approval before risky actions
+WHAT UD STUDIO WILL BUILD:
+Explain what will be created internally, without showing code.
 
 NEXT ACTION:
-Tell the customer/Aslam what to do next.
-`;
-
-    const r = await fetch("https://api.moonshot.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.MOONSHOT_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: KIMI_MODEL,
-        messages: [
-          { role: "system", content: "You are UD Studio Builder." },
-          { role: "user", content: prompt }
-        ],
-        temperature: 0.4
-      })
-    });
-
-    const data = await r.json();
-
-    if (!r.ok) {
-      return res.status(r.status).json({
-        error: data?.error?.message || "Kimi API error"
-      });
-    }
-
-    const text = data?.choices?.[0]?.message?.content || "No output.";
+Tell user to approve or contact UD Studio.
+";
     res.json({ output: text, model: KIMI_MODEL });
 
   } catch (err) {
