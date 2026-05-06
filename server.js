@@ -45,17 +45,53 @@ Rules:
 Customer idea:
 ${idea}
 
-Return in this format:
+Return a real build blueprint in this exact format:
 
 STATUS:
 PROJECT NAME:
 PROJECT TYPE:
+TARGET USER:
 BEST PACKAGE:
-FEATURES:
-BUILD STRUCTURE:
+PRICE ESTIMATE AED:
 DELIVERY TIME:
-PRICE ESTIMATE:
+
+PROMOTED IDEA:
+Explain the idea in 3 clear lines.
+
+TECH STACK:
+List the best technologies.
+
+PROJECT STRUCTURE:
+Show folders and files.
+
+FILES TO CREATE:
+List every file needed.
+
+CORE FEATURES:
+List practical features.
+
+BUILD COMMANDS:
+Give terminal-ready commands.
+
+RUN COMMANDS:
+Give terminal-ready commands.
+
+DEPLOY COMMANDS:
+Give GitHub/Cloudflare deployment steps.
+
+RPi5 / MOBILE NOTES:
+Give optimization notes if useful.
+
+SAFETY RULES:
+- No API keys in frontend
+- No private IPs in public site
+- Include .gitignore
+- Include errorHandler.js
+- Include rollback.js
+- Approval before risky actions
+
 NEXT ACTION:
+Tell the customer/Aslam what to do next.
 `;
 
     const r = await fetch("https://api.moonshot.ai/v1/chat/completions", {
