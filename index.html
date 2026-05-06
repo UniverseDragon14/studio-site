@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Universal Dragon Studio | AI Websites, Apps & Security Systems</title>
+  <meta name="description" content="Universal Dragon Studio by Aslam builds low-cost AI websites, apps, automation and defensive security systems for small businesses." />
+  <style>
+    :root{
+      --bg:#050507;
+      --panel:#0d0d12;
+      --panel2:#14141c;
+      --text:#f4f4f5;
+      --muted:#a1a1aa;
+      --line:#2a2a35;
+      --fire:#ff4d00;
+      --gold:#ffb703;
+      --cyan:#00d4ff;
+      --green:#22c55e;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:Arial, sans-serif;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,77,0,.18), transparent 35%),
+        radial-gradient(circle at 80% 20%, rgba(0,212,255,.12), transparent 30%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.6;
+    }
+    header{
+      padding:22px 18px;
+      border-bottom:1px solid var(--line);
+      background:rgba(5,5,7,.75);
+      position:sticky;
+      top:0;
+      backdrop-filter:blur(12px);
+      z-index:10;
+    }
+    .nav{
+      max-width:1100px;
+      margin:auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+    }
+    .brand{
+      font-weight:900;
+      letter-spacing:1px;
+      color:var(--gold);
+      font-size:18px;
+    }
+    .badge{
+      border:1px solid rgba(255,183,3,.45);
+      color:var(--gold);
+      padding:7px 12px;
+      border-radius:999px;
+      font-size:13px;
+    }
+    main{max-width:1100px;margin:auto;padding:46px 18px}
+    .hero{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:28px;
+      align-items:center;
+      min-height:70vh;
+    }
+    h1{
+      font-size:clamp(38px,8vw,78px);
+      line-height:1;
+      letter-spacing:-2px;
+      margin-bottom:18px;
+    }
+    h1 span{
+      background:linear-gradient(90deg,var(--fire),var(--gold),var(--cyan));
+      -webkit-background-clip:text;
+      color:transparent;
+    }
+    .lead{
+      color:var(--muted);
+      font-size:clamp(18px,3vw,23px);
+      max-width:760px;
+      margin-bottom:26px;
+    }
+    .hero-card{
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:24px;
+      box-shadow:0 20px 70px rgba(0,0,0,.45);
+    }
+    .status{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      color:var(--green);
+      font-weight:700;
+      margin-bottom:16px;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 18px var(--green);
+    }
+    .btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+    .btn{
+      display:inline-block;
+      text-decoration:none;
+      color:white;
+      font-weight:800;
+      padding:14px 20px;
+      border-radius:14px;
+      border:1px solid var(--line);
+    }
+    .primary{
+      background:linear-gradient(135deg,var(--fire),#b91c1c);
+      border:none;
+    }
+    .secondary{
+      background:rgba(255,255,255,.04);
+    }
+    section{padding:48px 0}
+    .section-title{
+      font-size:34px;
+      margin-bottom:10px;
+    }
+    .section-sub{
+      color:var(--muted);
+      margin-bottom:24px;
+      max-width:760px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+    }
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:22px;
+    }
+    .card h3{
+      color:var(--gold);
+      margin-bottom:10px;
+      font-size:21px;
+    }
+    .card p,.card li{
+      color:var(--muted);
+    }
+    ul{padding-left:18px;margin-top:10px}
+    .price{
+      font-size:34px;
+      font-weight:900;
+      margin:14px 0 4px;
+    }
+    .small{color:var(--muted);font-size:14px}
+    .highlight{
+      border-color:rgba(255,77,0,.7);
+      box-shadow:0 0 35px rgba(255,77,0,.12);
+    }
+    .steps{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+    .step{
+      background:var(--panel2);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+    }
+    .num{
+      color:var(--cyan);
+      font-weight:900;
+      font-size:24px;
+    }
+    footer{
+      border-top:1px solid var(--line);
+      padding:28px 18px;
+      text-align:center;
+      color:var(--muted);
+      background:#030304;
+    }
+    @media(max-width:800px){
+      .hero{grid-template-columns:1fr}
+      .grid{grid-template-columns:1fr}
+      .steps{grid-template-columns:1fr}
+      .nav{align-items:flex-start;flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">🐉 Universal Dragon Studio</div>
+      <div class="badge">AI Websites • Apps • Defensive Security</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Build your <span>website, app, or AI system</span> fast.</h1>
+        <p class="lead">
+          Low-cost digital studio by Aslam. We create practical websites, business apps,
+          AI assistants, automation tools, and defensive security systems for real use.
+        </p>
+        <div class="btns">
+          <a class="btn primary" href="mailto:univercialdragon@gmail.com?subject=I need a website/app">Start a Project</a>
+          <a class="btn secondary" href="#pricing">View Pricing</a>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="status"><span class="dot"></span> Studio Online</div>
+        <h2>What we build</h2>
+        <ul>
+          <li>Business websites and landing pages</li>
+          <li>Mobile-friendly web apps</li>
+          <li>AI chat/assistant integration</li>
+          <li>Booking, contact, gallery, QR menu pages</li>
+          <li>Defensive security checks and safe system setup</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="services">
+      <h2 class="section-title">Services</h2>
+      <p class="section-sub">Simple, useful, and built for customers who need results without expensive software teams.</p>
+
+      <div class="grid">
+        <div class="card">
+          <h3>🌐 Websites</h3>
+          <p>Portfolio, shop, service page, restaurant menu, event page, booking/contact page.</p>
+        </div>
+        <div class="card">
+          <h3>📱 Apps</h3>
+          <p>Small web apps, dashboards, forms, admin panels, customer tools, mobile-first interfaces.</p>
+        </div>
+        <div class="card">
+          <h3>🤖 AI Automation</h3>
+          <p>AI assistant, FAQ chatbot, email draft helper, workflow automation, local business support tools.</p>
+        </div>
+        <div class="card">
+          <h3>🛡️ Security Systems</h3>
+          <p>Defensive-only checks, safe setup, backup, rollback, access review, basic protection guidance.</p>
+        </div>
+        <div class="card">
+          <h3>⚙️ Maintenance</h3>
+          <p>Monthly updates, content changes, small fixes, monitoring, backups, and improvements.</p>
+        </div>
+        <div class="card">
+          <h3>🔥 Universal Dragon Lab</h3>
+          <p>Advanced prototypes for AI, robotics, Raspberry Pi, mobile assistant layers, and future systems.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <h2 class="section-title">Pricing</h2>
+      <p class="section-sub">Starter prices. Final price depends on features, pages, and delivery time.</p>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Starter</h3>
+          <p>Landing page or simple portfolio.</p>
+          <div class="price">149 AED</div>
+          <div class="small">setup + 29 AED/month maintenance</div>
+          <ul>
+            <li>1 page</li>
+            <li>Mobile friendly</li>
+            <li>Email/WhatsApp/contact link</li>
+            <li>Basic design</li>
+          </ul>
+        </div>
+
+        <div class="card highlight">
+          <h3>Business</h3>
+          <p>Small business website/app.</p>
+          <div class="price">299 AED</div>
+          <div class="small">setup + 49 AED/month maintenance</div>
+          <ul>
+            <li>3–5 sections/pages</li>
+            <li>Gallery/services/pricing</li>
+            <li>Contact form or booking request</li>
+            <li>Domain setup support</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Pro AI / Security</h3>
+          <p>AI assistant or defensive system setup.</p>
+          <div class="price">599 AED+</div>
+          <div class="small">setup + 99 AED/month maintenance</div>
+          <ul>
+            <li>AI chatbot/assistant</li>
+            <li>Dashboard or automation</li>
+            <li>Backup and rollback basics</li>
+            <li>Defensive-only security guidance</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="section-sub" style="margin-top:18px">
+        Yearly maintenance: Starter 299 AED/year, Business 499 AED/year, Pro 999 AED/year.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="section-title">How it works</h2>
+      <div class="steps">
+        <div class="step"><div class="num">01</div><p>Tell your idea or business need.</p></div>
+        <div class="step"><div class="num">02</div><p>We create a clear plan and price.</p></div>
+        <div class="step"><div class="num">03</div><p>We build website/app fast.</p></div>
+        <div class="step"><div class="num">04</div><p>You review, approve, and go live.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="hero-card">
+        <h2>Start your project</h2>
+        <p class="lead">Send your idea. We will reply with a simple plan, price, and delivery steps.</p>
+        <div class="btns">
+          <a class="btn primary" href="mailto:univercialdragon@gmail.com?subject=Universal Dragon Studio Project Request">Email Universal Dragon Studio</a>
+          <a class="btn secondary" href="https://udos.universaldragon.com">View UDOS Demo</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Universal Dragon Studio — created by Aslam. Practical AI, websites, apps, and defensive systems.
+  </footer>
+</body>
+</html>
