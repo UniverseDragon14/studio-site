@@ -1,0 +1,25 @@
+{
+  "name": "studio_site",
+  "version": "1.0.0",
+  "description": "Public service website for AI-assisted websites, apps, automation, and defensive security systems.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UniverseDragon14/studio-site.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/UniverseDragon14/studio-site/issues"
+  },
+  "homepage": "https://github.com/UniverseDragon14/studio-site#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  },
+  "type": "module"
+}

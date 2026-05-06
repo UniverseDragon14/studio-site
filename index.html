@@ -343,7 +343,7 @@
 
           <div class="builder-actions">
             <button onclick="studioPromote()">Promote Idea</button>
-            <button onclick="studioCreate()">Create Plan</button>
+            <button onclick="studioCreate()">Strong Build</button>
             <button onclick="studioRun()">Run Preview</button>
           </div>
         </div>
@@ -449,46 +449,37 @@ THINKING:
 This can become a real digital product.
 
 NEXT ACTION:
-Press Create Plan to convert this into pages, features, pricing, and build steps.`
+Press Strong Build to convert this into pages, features, pricing, and build steps.`
         );
       }
 
-      function studioCreate(){
+      async function studioCreate(){
         const idea = getIdea();
         if(!idea){
           setOutput("STATUS:\\nNo idea entered.\\n\\nNEXT ACTION:\\nWrite your project idea first.");
           return;
         }
 
-        setOutput(
-`STATUS:
-Build plan created.
+        setOutput("STATUS:\\nThinking with Kimi Build Brain...\\n\\nNOTE:\\nDiscuss is free. Strong Build uses server AI only after this button.");
 
-PROJECT:
-${idea}
+        try {
+          const res = await fetch("/api/build", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idea })
+          });
 
-SUGGESTED STRUCTURE:
-1. Home / Landing page
-2. Service or product section
-3. Contact / WhatsApp action
-4. Admin or dashboard module if needed
-5. Mobile-friendly layout
+          const data = await res.json();
 
-FEATURES:
-- Clean public website/app UI
-- Fast loading
-- Contact/action button
-- Future AI assistant support
-- Safe backend option
+          if (!res.ok) {
+            setOutput("STATUS:\\nBuild brain error.\\n\\nERROR:\\n" + (data.error || "Unknown error") + "\\n\\nNEXT ACTION:\\nCheck server.js and .env.");
+            return;
+          }
 
-PRICE ESTIMATE:
-Starter: 149 AED
-Business: 299 AED
-AI/System: 599 AED+
-
-NEXT ACTION:
-Send this plan to UD Studio for build approval.`
-        );
+          setOutput(data.output + "\\n\\nMODEL: " + (data.model || "kimi"));
+        } catch (e) {
+          setOutput("STATUS:\\nKimi Build Brain not connected.\\n\\nNEXT ACTION:\\nRun server.js on Pi/Replit/VPS. GitHub Pages alone cannot run backend.");
+        }
       }
 
       function studioRun(){
