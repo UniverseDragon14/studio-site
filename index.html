@@ -339,7 +339,13 @@
         <div class="builder-left">
           <h3>Discuss</h3>
           <p>Use this side to explain the idea normally.</p>
-          <textarea id="ideaBox" placeholder="Example: I need an app for booking service customers, with login, pricing, WhatsApp contact, and admin dashboard."></textarea>
+          <textarea id="ideaBox" placeholder="Describe your idea... Example: Create a 3D Universal Dragon world app with login, public preview, project cards, and AI build planning."></textarea>
+
+          <div class="idea-examples">
+            <button type="button" onclick="setExampleIdea('Create a 3D Universal Dragon world app with public preview, project cards, login concept, and AI build planning')">3D World App</button>
+            <button type="button" onclick="setExampleIdea('Create a business website builder where users discuss ideas and request a professional website')">Website Builder</button>
+            <button type="button" onclick="setExampleIdea('Create a defensive security dashboard for backups, logs, rollback status, and safe alerts')">Security Dashboard</button>
+          </div>
 
           <div class="builder-actions">
             <button onclick="studioPromote()">Promote Idea</button>
@@ -392,6 +398,20 @@ Write your project idea on the Discuss side, then press Promote Idea.
         padding:16px;
         font-size:16px;
         resize:vertical;
+      }
+      .idea-examples{
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
+        margin-top:12px;
+      }
+      .idea-examples button{
+        border:1px solid var(--line);
+        border-radius:999px;
+        padding:8px 10px;
+        color:var(--gold);
+        background:rgba(255,183,3,.06);
+        font-weight:700;
       }
       .builder-actions{
         display:flex;
@@ -498,7 +518,22 @@ Write your project idea on the Discuss side, then press Promote Idea.
 
     <script>
       function getIdea(){
-        return document.getElementById("ideaBox").value.trim();
+        const box = document.getElementById("ideaBox");
+        if(!box) return "";
+        const idea = box.value.trim();
+        if(
+          idea.toLowerCase() === "create plan / strong build" ||
+          idea.toLowerCase() === "strong build" ||
+          idea.toLowerCase() === "create plan"
+        ){
+          return "";
+        }
+        return idea;
+      }
+
+      function setExampleIdea(text){
+        document.getElementById("ideaBox").value = text;
+        studioPromote();
       }
 
       function setOutput(text){
@@ -640,7 +675,7 @@ Email: univercialdragon@gmail.com`
   </main>
 
   <footer>
-    UD Studio — created by Aslam. Practical AI, websites, apps, and defensive systems.
+    UD Studio · Universal Dragon Studio · Built by Aslam
   </footer>
 </body>
 </html>
