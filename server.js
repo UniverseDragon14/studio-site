@@ -423,7 +423,7 @@ Dialogue: 0,0:00:00.00,9:59:59.00,UDText,,0,0,0,,${rawText}
 
     fs.writeFileSync(assPath, ass, "utf8");
 
-    const assForFilter = assPath.replace(/\/g, "/").replace(/:/g, "\:");
+    const assForFilter = assPath.split(path.sep).join("/");
 
     await runCmd("ffmpeg", [
       "-y",
