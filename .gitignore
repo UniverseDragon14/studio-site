@@ -11,3 +11,6 @@ npm-debug.log
 backups/
 uploads/
 videos_output/
+
+# Universal Dragon Studio private local data
+.studio_data/

@@ -19,9 +19,12 @@ const __dirname = path.dirname(__filename);
 
 const UPLOAD_DIR = path.join(__dirname, "uploads");
 const OUTPUT_DIR = path.join(__dirname, "videos_output");
+const PRIVATE_DATA_DIR = path.join(__dirname, ".studio_data");
+const PROFILE_PATH = path.join(PRIVATE_DATA_DIR, "studio_profile.json");
 
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+fs.mkdirSync(PRIVATE_DATA_DIR, { recursive: true });
 
 app.use(express.json({ limit: "2mb" }));
 app.get("/", (req, res) => {
@@ -39,6 +42,60 @@ function safeName(name) {
     .replace(/[^a-zA-Z0-9._-]/g, "_")
     .slice(0, 120);
 }
+
+
+function cleanProfileText(v, max = 160) {
+  return String(v || "")
+    .replace(/[<>\r\n]/g, "")
+    .trim()
+    .slice(0, max);
+}
+
+function defaultStudioProfile() {
+  return {
+    creator_name: "Aslam",
+    project_name: "Universal Dragon Studio",
+    public_email: "univercialdragon@gmail.com",
+    youtube_email: "aslamaam78@gmail.com",
+    safety_mode: "approval_first",
+    auto_send: false,
+    updated_at: new Date().toISOString()
+  };
+}
+
+function sanitizeProfile(input = {}) {
+  const base = defaultStudioProfile();
+  return {
+    creator_name: cleanProfileText(input.creator_name ?? base.creator_name),
+    project_name: cleanProfileText(input.project_name ?? base.project_name),
+    public_email: cleanProfileText(input.public_email ?? base.public_email),
+    youtube_email: cleanProfileText(input.youtube_email ?? base.youtube_email),
+    safety_mode: "approval_first",
+    auto_send: false,
+    updated_at: new Date().toISOString()
+  };
+}
+
+function readStudioProfile() {
+  try {
+    if (!fs.existsSync(PROFILE_PATH)) {
+      const fresh = defaultStudioProfile();
+      fs.writeFileSync(PROFILE_PATH, JSON.stringify(fresh, null, 2));
+      return fresh;
+    }
+    const raw = JSON.parse(fs.readFileSync(PROFILE_PATH, "utf8"));
+    return sanitizeProfile(raw);
+  } catch {
+    return defaultStudioProfile();
+  }
+}
+
+function writeStudioProfile(input) {
+  const safe = sanitizeProfile(input);
+  fs.writeFileSync(PROFILE_PATH, JSON.stringify(safe, null, 2));
+  return safe;
+}
+
 
 function requireStudioBrain(res) {
   if (!process.env.GROQ_API_KEY) {
@@ -77,6 +134,22 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   limits: { fileSize: 1024 * 1024 * 1024 * 3 }
+});
+
+
+app.get("/api/studio/profile", (req, res) => {
+  res.json({
+    status: "ok",
+    profile: readStudioProfile()
+  });
+});
+
+app.post("/api/studio/profile", (req, res) => {
+  const saved = writeStudioProfile(req.body || {});
+  res.json({
+    status: "profile_saved",
+    profile: saved
+  });
 });
 
 app.get("/api/studio/health", (req, res) => {

@@ -113,7 +113,8 @@ button{font:inherit}
   <div class="sheetHead"><b>Mail Connect</b><button class="iconBtn" onclick="closeSheets()">×</button></div>
   <div class="profileBox">
     <div class="statusLine">Safe mode: mail will only draft/summarize later. No auto-send without approval.</div>
-    <input id="mailInput" placeholder="Creator email, example: aslamaam78@gmail.com" />
+    <input id="publicMailInput" placeholder="Public contact email" />
+    <input id="youtubeMailInput" placeholder="YouTube creator email" />
     <button onclick="saveMail()">Save mail profile</button>
     <button class="quick" onclick="location.href='mailto:?subject=Universal%20Dragon%20Studio'">Open device mail app<span>Uses your phone/browser mail safely</span></button>
   </div>
@@ -151,5 +152,42 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js").catch(() => null);
 }
 </script>
+
+<script>
+async function loadBackendProfile(){
+  try{
+    const res = await fetch("/api/studio/profile");
+    const data = await res.json();
+    const p = data.profile || {};
+    if(document.getElementById("nameInput")) document.getElementById("nameInput").value = p.creator_name || "Aslam";
+    if(document.getElementById("projectInput")) document.getElementById("projectInput").value = p.project_name || "Universal Dragon Studio";
+    if(document.getElementById("publicMailInput")) document.getElementById("publicMailInput").value = p.public_email || "univercialdragon@gmail.com";
+    if(document.getElementById("youtubeMailInput")) document.getElementById("youtubeMailInput").value = p.youtube_email || "aslamaam78@gmail.com";
+  }catch(e){}
+}
+
+async function saveProfileCore(){
+  const payload = {
+    creator_name: document.getElementById("nameInput")?.value || "Aslam",
+    project_name: document.getElementById("projectInput")?.value || "Universal Dragon Studio",
+    public_email: document.getElementById("publicMailInput")?.value || "univercialdragon@gmail.com",
+    youtube_email: document.getElementById("youtubeMailInput")?.value || "aslamaam78@gmail.com"
+  };
+
+  const res = await fetch("/api/studio/profile", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  alert(data.status === "profile_saved" ? "Studio profile saved safely." : "Profile save failed.");
+}
+
+saveMail = saveProfileCore;
+saveSettings = saveProfileCore;
+window.addEventListener("load", loadBackendProfile);
+</script>
+
 </body>
 </html>
