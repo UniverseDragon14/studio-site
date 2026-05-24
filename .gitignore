@@ -1,4 +1,9 @@
-.env
 node_modules/
+.env
+.env.*
+!.env.example
+*.log
+dist/
+build/
 npm-debug.log
 .DS_Store
