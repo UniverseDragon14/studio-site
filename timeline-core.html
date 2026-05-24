@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Universal Dragon Studio | Timeline Core V1</title>
-<meta name="description" content="Universal Dragon Studio Timeline Core V1: visual video preview, trim range, split clips, and export MP4." />
+<title>Universal Dragon Studio | Timeline Core V3</title>
+<meta name="description" content="Universal Dragon Studio Timeline Core V3: visual video preview, trim range, split clips, and export MP4." />
 <meta name="theme-color" content="#ff5a1f" />
 <link rel="manifest" href="/manifest.webmanifest" />
 <link rel="icon" href="/ud-icon.svg" type="image/svg+xml" />
@@ -22,6 +22,34 @@ a{color:var(--cyan);text-decoration:none}button,input,select{font:inherit}button
 .grid{display:grid;grid-template-columns:360px 1fr;gap:14px;align-items:start}.card{border:1px solid var(--line);border-radius:24px;background:rgba(13,17,23,.9);padding:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}label{display:block;color:var(--gold);font-weight:950;margin:12px 0 8px}input,select{width:100%;border:1px solid var(--line);border-radius:16px;background:#080b10;color:var(--text);padding:13px;outline:none}.btn{width:100%;border:0;border-radius:18px;background:linear-gradient(135deg,var(--fire),var(--pink));color:white;padding:14px 16px;font-weight:950;margin-top:10px}.btn.secondary{background:#090d12;border:1px solid var(--cyan);color:var(--cyan)}.btn.safe{background:#092013;border:1px solid rgba(57,255,74,.35);color:var(--green)}.btn.warn{background:#1c1208;border:1px solid rgba(255,204,77,.35);color:var(--gold)}
 .preview video{width:100%;max-height:52svh;border:1px solid var(--line);border-radius:24px;background:#000;display:block}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.meta div{border:1px solid var(--line);border-radius:15px;background:#070a0f;padding:10px;color:var(--muted);font-size:12px}.meta b{display:block;color:var(--gold);font-size:15px;margin-bottom:3px}
 .timeline{margin-top:14px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018));padding:14px}.rail{position:relative;height:76px;border:1px solid #223044;border-radius:18px;background:repeating-linear-gradient(90deg,rgba(255,204,77,.12) 0 2px,transparent 2px 60px),linear-gradient(135deg,rgba(255,90,31,.18),rgba(0,217,255,.1));overflow:hidden}.selection{position:absolute;top:0;bottom:0;background:linear-gradient(90deg,rgba(57,255,74,.22),rgba(0,217,255,.22));border-left:3px solid var(--green);border-right:3px solid var(--cyan);pointer-events:none}.playhead{position:absolute;top:0;bottom:0;width:3px;background:#fff;box-shadow:0 0 18px rgba(255,255,255,.8);left:0;pointer-events:none}.rangeRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.rangeBox{border:1px solid var(--line);border-radius:16px;background:#070a0f;padding:10px}.rangeBox span{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;font-weight:800}.rangeBox input{padding:0;margin-top:8px}.timeRow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.result{white-space:pre-wrap;background:#020408;border:1px solid var(--line);border-radius:18px;padding:12px;min-height:120px;color:var(--green);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;overflow:auto}.links{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}.exportLink{display:block;border:1px solid var(--line);border-radius:16px;background:#080b10;padding:12px;color:var(--cyan);font-weight:900}.hint{color:var(--muted);font-size:13px;line-height:1.45}.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,204,77,.28);color:var(--gold);border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900;margin:0 0 12px}
+
+.presetGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  margin:10px 0 6px;
+}
+.presetBtn{
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  color:var(--text);
+  padding:11px;
+  text-align:left;
+  font-weight:950;
+}
+.presetBtn small{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:4px;
+  font-weight:750;
+}
+.presetBtn.active{
+  border-color:rgba(57,255,74,.55);
+  box-shadow:0 0 0 1px rgba(57,255,74,.12),0 0 24px rgba(57,255,74,.08);
+}
+
 @media(max-width:900px){.grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr 1fr}.meta{grid-template-columns:repeat(2,1fr)}.preview video{max-height:45svh}}
 @media(max-width:520px){.app{padding-left:12px;padding-right:12px}.hero{padding:16px;border-radius:24px}.timeRow,.rangeRow,.links{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.top{align-items:flex-start}.title b{font-size:12px}.back{padding:10px}}
 </style>
@@ -29,14 +57,14 @@ a{color:var(--cyan);text-decoration:none}button,input,select{font:inherit}button
 <body>
 <div class="app">
   <header class="top">
-    <div class="brand"><div class="mark">🐉</div><div class="title"><b>Universal Dragon Studio</b><span>Timeline Core V1 · visual edit foundation</span></div></div>
+    <div class="brand"><div class="mark">🐉</div><div class="title"><b>Universal Dragon Studio</b><span>Timeline Core V3 · visual edit foundation</span></div></div>
     <button class="back" onclick="location.href='/'">Home</button>
   </header>
 
   <section class="hero">
-    <div class="badge">🎞️ CapCut-style first brick</div>
+    <div class="badge">🎞️ CapCut-style caption brick</div>
     <h1>Timeline <span>Core</span></h1>
-    <p>Upload a video, preview it, select a start/end range visually, split into two clips, and export MP4 using the existing safe FFmpeg backend. This is not full CapCut yet — this is the real timeline foundation.</p>
+    <p>Upload a video, preview it, select a start/end range visually, split into two clips, and export MP4 using the existing safe FFmpeg backend. This is not full CapCut yet — this is the real timeline + caption foundation.</p>
   </section>
 
   <main class="grid">
@@ -62,6 +90,17 @@ a{color:var(--cyan);text-decoration:none}button,input,select{font:inherit}button
 
       <label>4. Text Overlay Layer</label>
       <input id="overlayText" value="Universal Dragon Studio" placeholder="Text to show on video" />
+
+      <label>Caption Presets V3</label>
+      <div class="presetGrid" id="captionPresetGrid">
+        <button class="presetBtn" onclick="applyCaptionPreset('brand')">🐉 Brand Title<small>big clean bottom title</small></button>
+        <button class="presetBtn" onclick="applyCaptionPreset('hook')">⚡ Hook Text<small>center punch line</small></button>
+        <button class="presetBtn" onclick="applyCaptionPreset('shorts')">📱 Shorts Hook<small>mobile attention line</small></button>
+        <button class="presetBtn" onclick="applyCaptionPreset('top')">🎞️ Top Label<small>small top project label</small></button>
+        <button class="presetBtn" onclick="applyCaptionPreset('subtitle')">💬 Subtitle<small>normal readable caption</small></button>
+        <button class="presetBtn" onclick="applyCaptionPreset('clean')">✅ Clean Default<small>safe simple export</small></button>
+      </div>
+
       <div class="timeRow">
         <div>
           <label>Position</label>
@@ -178,7 +217,7 @@ async function uploadVideo(){
     document.getElementById('splitText').value = fmt(Math.min(duration/2, 5));
     updateUI();
     show({ status:'timeline_ready', file:uploadedFile, duration_seconds:Number(duration.toFixed(2)), note:'Use handles to choose range, then export or split.' });
-    saveRecent('Timeline Core V1', '/timeline-core.html', 'timeline', 'Visual trim/split editor opened');
+    saveRecent('Timeline Core V3', '/timeline-core.html', 'timeline', 'Visual trim/split editor opened');
   };
 }
 function previewSelection(){ if(!uploadedFile){ show('Upload video first.'); return; } previewStop = true; player.currentTime = startSec(); setTimeout(()=>{previewStop = false; player.play();},120); }
@@ -194,11 +233,17 @@ player.addEventListener('timeupdate', () => {
 async function exportSelection(){
   if(!uploadedFile){ show('Upload video first.'); return; }
   const payload = { file: uploadedFile, start: fmt(startSec()), duration: fmt(selectedDuration()) };
+  links.innerHTML='';
   show('Exporting selected MP4 with FFmpeg...');
   const res = await fetch('/api/video/trim', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
   const data = await res.json();
   show(data);
-  if(data.url){ addLink('Open exported MP4', data.url); saveRecent('Exported Timeline Clip', data.url, 'export', `Selected ${fmt(startSec())} to ${fmt(endSec())}`); }
+  if(data.url){
+    addLink('Open exported MP4', data.url);
+    player.src = data.url;
+    player.load();
+    saveRecent('Exported Timeline Clip', data.url, 'export', `Selected ${fmt(startSec())} to ${fmt(endSec())}`);
+  }
 }
 async function splitClip(){
   if(!uploadedFile){ show('Upload video first.'); return; }
@@ -216,6 +261,60 @@ async function splitClip(){
   saveRecent('Split Timeline Clips', '/timeline-core.html', 'timeline', `Split at ${fmt(split)}`);
 }
 
+
+function applyCaptionPreset(name){
+  const presets = {
+    brand: {
+      text: 'UNIVERSAL DRAGON STUDIO',
+      position: 'bottom',
+      fontSize: 48
+    },
+    hook: {
+      text: 'AI STUDIO BUILT ON PI5',
+      position: 'center',
+      fontSize: 46
+    },
+    shorts: {
+      text: 'Watch this AI build come alive',
+      position: 'bottom',
+      fontSize: 44
+    },
+    top: {
+      text: 'TIMELINE CORE V3',
+      position: 'top',
+      fontSize: 34
+    },
+    subtitle: {
+      text: 'Build real. Test real. Improve slowly.',
+      position: 'bottom',
+      fontSize: 34
+    },
+    clean: {
+      text: 'Universal Dragon Studio',
+      position: 'bottom',
+      fontSize: 42
+    }
+  };
+
+  const p = presets[name] || presets.clean;
+
+  document.getElementById('overlayText').value = p.text;
+  document.getElementById('overlayPosition').value = p.position;
+  document.getElementById('overlayFontSize').value = p.fontSize;
+
+  document.querySelectorAll('.presetBtn').forEach(btn => btn.classList.remove('active'));
+  event?.currentTarget?.classList?.add('active');
+
+  show({
+    status: 'caption_preset_ready',
+    preset: name,
+    text: p.text,
+    position: p.position,
+    fontSize: p.fontSize,
+    next: 'Press Export With Text Overlay'
+  });
+}
+
 async function exportTextOverlay(){
   if(!uploadedFile){ show('Upload video first.'); return; }
 
@@ -228,6 +327,7 @@ async function exportTextOverlay(){
     fontSize: document.getElementById('overlayFontSize')?.value || 42
   };
 
+  links.innerHTML='';
   show('Burning text overlay into selected video with FFmpeg...');
   const res = await fetch('/api/video/text-overlay', {
     method:'POST',
@@ -240,6 +340,8 @@ async function exportTextOverlay(){
 
   if(data.url){
     addLink('Open text overlay MP4', data.url);
+    player.src = data.url;
+    player.load();
     saveRecent('Text Overlay Export', data.url, 'caption', `Text: ${payload.text}`);
   }
 }
