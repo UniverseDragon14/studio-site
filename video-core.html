@@ -97,7 +97,7 @@ a{color:var(--cyan)}
     <h1>Long Video <span>Upload + Trim</span></h1>
     <p>
       V1 real backend test: upload video, choose start time, choose duration, then export MP4 using FFmpeg.
-      Groq brain is for planning/title/caption later.
+      Studio Brain is for planning/title/caption later.
     </p>
     <p class="small">Private local Studio tool. Do not upload secret/private files.</p>
   </section>
@@ -250,7 +250,7 @@ async function generateCreatorPackage(){
   const start = document.getElementById("startTime").value.trim() || "00:00:00";
   const duration = document.getElementById("duration").value.trim() || "00:00:30";
 
-  show("Generating AI Creator Package with Groq...");
+  show("Generating AI Creator Package with Studio Brain...");
 
   const res = await fetch("/api/video/creator-package", {
     method:"POST",
