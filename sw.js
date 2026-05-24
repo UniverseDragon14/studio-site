@@ -1,4 +1,4 @@
-const CACHE_NAME = "ud-studio-v1779652744";
+const CACHE_NAME = "ud-studio-v1779653117";
 const APP_SHELL = [
   "/",
   "/studio-app.html",
