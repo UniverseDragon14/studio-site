@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Universal Dragon Studio App</title>
+<meta name="description" content="Universal Dragon Studio app shell for image, video, AI creator tools, mail connection, and settings." />
+<style>
+:root{
+  --bg:#06070b;
+  --card:#11141d;
+  --card2:#171b26;
+  --line:#293142;
+  --text:#f8fafc;
+  --muted:#9ca3af;
+  --fire:#ff5a1f;
+  --gold:#ffcc4d;
+  --pink:#c02cff;
+  --cyan:#00d9ff;
+  --green:#39ff4a;
+  --danger:#ff4d6d;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:
+    radial-gradient(circle at 12% 6%,rgba(255,90,31,.22),transparent 28%),
+    radial-gradient(circle at 82% 2%,rgba(0,217,255,.16),transparent 28%),
+    radial-gradient(circle at 50% 100%,rgba(192,44,255,.17),transparent 28%),
+    var(--bg);
+  color:var(--text);
+}
+a{color:inherit;text-decoration:none}
+.app{
+  height:100svh;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  overflow:hidden;
+}
+.topbar{
+  padding:14px 18px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.identity{display:flex;align-items:center;gap:10px;min-width:0}
+.logoMark{
+  width:42px;height:42px;border-radius:15px;
+  background:linear-gradient(135deg,var(--fire),var(--pink));
+  display:grid;place-items:center;
+  box-shadow:0 0 28px rgba(255,90,31,.3);
+  font-size:22px;
+}
+.brand{min-width:0}
+.brand b{display:block;font-size:15px;letter-spacing:.08em;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
+.brand span{font-size:12px;color:var(--muted)}
+.iconBtn{
+  width:42px;height:42px;border:1px solid var(--line);border-radius:15px;
+  background:rgba(17,20,29,.82);color:var(--text);
+  display:grid;place-items:center;font-size:20px;cursor:pointer;
+}
+.main{
+  min-height:0;
+  padding:0 16px 8px;
+  display:grid;
+  grid-template-rows:auto auto 1fr;
+  gap:12px;
+  overflow:hidden;
+}
+.hero{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025));
+  border-radius:28px;
+  padding:18px;
+  box-shadow:0 20px 70px rgba(0,0,0,.35);
+}
+.hero h1{margin:0;font-size:clamp(28px,7vw,58px);line-height:.95;letter-spacing:-1px}
+.hero h1 span{color:var(--fire)}
+.hero p{margin:12px 0 0;color:var(--muted);font-size:14px;line-height:1.5;max-width:780px}
+.searchWrap{position:relative}
+.searchWrap input{
+  width:100%;height:54px;border:1px solid var(--line);border-radius:20px;
+  background:rgba(17,20,29,.92);color:var(--text);
+  padding:0 18px 0 46px;font-size:16px;outline:none;
+}
+.searchWrap span{position:absolute;left:17px;top:15px;color:var(--muted)}
+.tools{
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  align-content:start;
+  overflow:hidden;
+}
+.tool{
+  min-height:118px;
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  padding:14px 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:8px;
+}
+.tool .ico{
+  width:54px;height:54px;border-radius:20px;
+  display:grid;place-items:center;font-size:27px;
+  background:linear-gradient(135deg,var(--fire),var(--pink));
+  box-shadow:0 0 24px rgba(255,90,31,.22);
+}
+.tool:nth-child(2) .ico{background:linear-gradient(135deg,#7c3aed,var(--pink))}
+.tool:nth-child(3) .ico{background:linear-gradient(135deg,#2563eb,var(--cyan))}
+.tool:nth-child(4) .ico{background:linear-gradient(135deg,#16a34a,var(--green))}
+.tool:nth-child(5) .ico{background:linear-gradient(135deg,#f97316,var(--gold))}
+.tool:nth-child(6) .ico{background:linear-gradient(135deg,#0891b2,var(--cyan))}
+.tool:nth-child(7) .ico{background:linear-gradient(135deg,#db2777,var(--pink))}
+.tool:nth-child(8) .ico{background:linear-gradient(135deg,#334155,#64748b)}
+.tool b{font-size:14px;line-height:1.15}
+.tool span{font-size:11px;color:var(--muted);line-height:1.25}
+.bottomNav{
+  padding:8px 18px calc(10px + var(--safe-bottom));
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  border-top:1px solid rgba(255,255,255,.08);
+  background:rgba(6,7,11,.82);
+  backdrop-filter:blur(16px);
+}
+.navItem{
+  border:0;background:transparent;color:var(--muted);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:800;
+}
+.navItem .navIcon{font-size:22px}
+.navItem.active{color:var(--gold)}
+.createBtn{
+  transform:translateY(-18px);
+  display:grid;place-items:center;
+}
+.createBtn .plus{
+  width:62px;height:62px;border-radius:24px;
+  border:0;background:linear-gradient(135deg,var(--fire),var(--pink));
+  color:white;font-size:32px;font-weight:900;
+  box-shadow:0 18px 45px rgba(192,44,255,.35);
+}
+.sheet{
+  position:fixed;inset:auto 14px calc(78px + var(--safe-bottom)) 14px;
+  background:rgba(17,20,29,.98);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:16px;
+  box-shadow:0 30px 90px rgba(0,0,0,.55);
+  transform:translateY(120%);
+  opacity:0;
+  pointer-events:none;
+  transition:.22s ease;
+  z-index:10;
+}
+.sheet.open{transform:translateY(0);opacity:1;pointer-events:auto}
+.sheetHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sheetHead b{color:var(--gold)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.quick{
+  border:1px solid var(--line);border-radius:18px;background:#090d12;color:var(--text);
+  padding:14px;text-align:left;cursor:pointer;font-weight:800;
+}
+.quick span{display:block;color:var(--muted);font-size:12px;font-weight:500;margin-top:4px}
+.profileBox{
+  display:grid;gap:10px;
+}
+.profileBox input{
+  width:100%;height:48px;border:1px solid var(--line);border-radius:16px;background:#090d12;color:var(--text);padding:0 12px;outline:none;
+}
+.statusLine{
+  border:1px solid rgba(57,255,74,.25);background:rgba(57,255,74,.06);color:var(--green);
+  padding:10px;border-radius:16px;font-size:13px;
+}
+@media(max-width:760px){
+  .main{padding:0 14px 8px}
+  .tools{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .tool{min-height:105px;border-radius:22px;padding:10px 8px}
+  .tool .ico{width:48px;height:48px;border-radius:18px;font-size:24px}
+  .hero{padding:16px;border-radius:24px}
+  .hero p{font-size:13px}
+}
+@media(max-height:760px){
+  .hero p{display:none}
+  .tool{min-height:94px}
+  .tool span{display:none}
+  .searchWrap input{height:48px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="identity">
+      <div class="logoMark">🐉</div>
+      <div class="brand">
+        <b>Universal Dragon Studio</b>
+        <span>Creator OS · Studio Brain V1</span>
+      </div>
+    </div>
+    <button class="iconBtn" onclick="openSheet('settingsSheet')" title="Settings">⚙️</button>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <h1>What will you <span>create</span> today?</h1>
+      <p>Image create/edit, video create/edit, AI video plan, creator package, mail workflow, and project tools in one clean app-style dashboard.</p>
+    </section>
+
+    <div class="searchWrap">
+      <span>⌕</span>
+      <input id="search" placeholder="Search tools: image, video, thumbnail, mail, website..." oninput="filterTools()" />
+    </div>
+
+    <section class="tools" id="tools">
+      <a class="tool" href="/image-studio.html" data-name="image photo thumbnail editor">
+        <div class="ico">🖼️</div><b>Image Studio</b><span>Create covers, thumbnails, promo images</span>
+      </a>
+      <a class="tool" href="/ai-video.html" data-name="ai video prompt storyboard images plan">
+        <div class="ico">🎬</div><b>AI Video Director</b><span>Prompt to scenes, image prompts, plan</span>
+      </a>
+      <a class="tool" href="/video-core.html" data-name="video edit trim audio shorts mp4">
+        <div class="ico">✂️</div><b>Video Core</b><span>Trim, audio, creator package</span>
+      </a>
+      <button class="tool" onclick="openSheet('mailSheet')" data-name="email gmail mail connect draft">
+        <div class="ico">✉️</div><b>Mail Connect</b><span>Draft/summarize workflow later</span>
+      </button>
+      <a class="tool" href="/ai-video.html#imageFiles" data-name="upload images to video order slideshow">
+        <div class="ico">🧩</div><b>Images to Video</b><span>Upload images and build MP4</span>
+      </a>
+      <a class="tool" href="/index.html" data-name="website app builder portfolio landing">
+        <div class="ico">🌐</div><b>Website Builder</b><span>Public site and app plans</span>
+      </a>
+      <button class="tool" onclick="openSheet('projectsSheet')" data-name="projects files recent saved">
+        <div class="ico">📁</div><b>Projects</b><span>Local project shortcuts</span>
+      </button>
+      <button class="tool" onclick="openSheet('settingsSheet')" data-name="settings profile safety account">
+        <div class="ico">⚙️</div><b>Settings</b><span>Profile, safety, app options</span>
+      </button>
+    </section>
+  </main>
+
+  <nav class="bottomNav">
+    <button class="navItem active" onclick="closeSheets()"><span class="navIcon">🏠</span>Home</button>
+    <button class="navItem" onclick="openSheet('projectsSheet')"><span class="navIcon">📁</span>Projects</button>
+    <div class="createBtn"><button class="plus" onclick="openSheet('createSheet')">+</button></div>
+    <button class="navItem" onclick="openSheet('mailSheet')"><span class="navIcon">✉️</span>Mail</button>
+    <button class="navItem" onclick="openSheet('settingsSheet')"><span class="navIcon">⚙️</span>Settings</button>
+  </nav>
+</div>
+
+<section class="sheet" id="createSheet">
+  <div class="sheetHead"><b>Create new</b><button class="iconBtn" onclick="closeSheets()">×</button></div>
+  <div class="grid2">
+    <button class="quick" onclick="location.href='/image-studio.html'">🖼️ Image / Thumbnail<span>Edit image, add text, export PNG</span></button>
+    <button class="quick" onclick="location.href='/ai-video.html'">🎬 AI Video Plan<span>Prompt to storyboard and image prompts</span></button>
+    <button class="quick" onclick="location.href='/video-core.html'">✂️ Video Edit<span>Trim, audio, creator package</span></button>
+    <button class="quick" onclick="openSheet('mailSheet')">✉️ Mail Draft<span>Connect workflow later, no auto-send</span></button>
+  </div>
+</section>
+
+<section class="sheet" id="mailSheet">
+  <div class="sheetHead"><b>Mail Connect</b><button class="iconBtn" onclick="closeSheets()">×</button></div>
+  <div class="profileBox">
+    <div class="statusLine">Safe mode: mail will only draft/summarize later. No auto-send without approval.</div>
+    <input id="mailInput" placeholder="Enter creator email, example: aslamaam78@gmail.com" />
+    <button onclick="saveMail()">Save mail profile</button>
+    <button class="secondary" onclick="location.href='mailto:?subject=Universal%20Dragon%20Studio'">Open device mail app</button>
+  </div>
+</section>
+
+<section class="sheet" id="settingsSheet">
+  <div class="sheetHead"><b>Settings</b><button class="iconBtn" onclick="closeSheets()">×</button></div>
+  <div class="profileBox">
+    <div class="statusLine">Universal Dragon Studio Brain V1 · local-first creator workflow</div>
+    <input id="nameInput" placeholder="Creator name" value="Aslam" />
+    <input id="projectInput" placeholder="Project name" value="Universal Dragon Studio" />
+    <button onclick="saveSettings()">Save settings</button>
+  </div>
+</section>
+
+<section class="sheet" id="projectsSheet">
+  <div class="sheetHead"><b>Projects</b><button class="iconBtn" onclick="closeSheets()">×</button></div>
+  <div class="grid2">
+    <button class="quick" onclick="location.href='/image-studio.html'">Image Studio V1<span>Thumbnail and cover design</span></button>
+    <button class="quick" onclick="location.href='/ai-video.html'">AI Video Director V1<span>Storyboard + image prompts</span></button>
+    <button class="quick" onclick="location.href='/video-core.html'">Video Core V1<span>Video edit foundation</span></button>
+    <button class="quick" onclick="location.href='/index.html'">Studio Site<span>Public landing page</span></button>
+  </div>
+</section>
+
+<script>
+function openSheet(id){
+  closeSheets();
+  document.getElementById(id).classList.add('open');
+}
+function closeSheets(){
+  document.querySelectorAll('.sheet').forEach(s => s.classList.remove('open'));
+}
+function filterTools(){
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  document.querySelectorAll('.tool').forEach(card => {
+    const hay = (card.dataset.name || '') + ' ' + card.textContent.toLowerCase();
+    card.style.display = hay.includes(q) ? '' : 'none';
+  });
+}
+function saveMail(){
+  const mail = document.getElementById('mailInput').value.trim();
+  localStorage.setItem('ud_studio_mail', mail);
+  alert(mail ? 'Mail profile saved locally.' : 'Mail cleared.');
+}
+function saveSettings(){
+  localStorage.setItem('ud_creator_name', document.getElementById('nameInput').value.trim());
+  localStorage.setItem('ud_project_name', document.getElementById('projectInput').value.trim());
+  alert('Settings saved locally.');
+}
+(function init(){
+  const mail = localStorage.getItem('ud_studio_mail');
+  if(mail) document.getElementById('mailInput').value = mail;
+  const name = localStorage.getItem('ud_creator_name');
+  if(name) document.getElementById('nameInput').value = name;
+  const project = localStorage.getItem('ud_project_name');
+  if(project) document.getElementById('projectInput').value = project;
+})();
+</script>
+</body>
+</html>
