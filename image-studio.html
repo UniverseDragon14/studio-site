@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Universal Dragon Studio | Image Studio V1</title>
+<style>
+:root{
+  --bg:#050607;
+  --panel:#0d1117;
+  --line:#263241;
+  --text:#f5f5f5;
+  --muted:#9ca3af;
+  --fire:#ff5a1f;
+  --gold:#ffcc4d;
+  --cyan:#00d9ff;
+  --green:#39ff4a;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255,90,31,.22), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(0,217,255,.16), transparent 35%),
+    var(--bg);
+  color:var(--text);
+}
+header{
+  padding:18px;
+  border-bottom:1px solid var(--line);
+  background:rgba(5,6,7,.88);
+  position:sticky;
+  top:0;
+  backdrop-filter:blur(10px);
+  z-index:2;
+}
+.logo{font-weight:900;color:var(--gold);letter-spacing:.08em}
+.wrap{padding:16px;max-width:1100px;margin:auto}
+.card{
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:18px;
+  background:rgba(13,17,23,.92);
+  box-shadow:0 0 35px rgba(255,90,31,.12);
+  margin-bottom:16px;
+}
+h1{font-size:clamp(32px,7vw,68px);line-height:.95;margin:8px 0}
+h1 span{color:var(--fire)}
+p{color:var(--muted);line-height:1.6}
+label{display:block;margin-top:14px;font-weight:800;color:var(--gold)}
+input,select,button,textarea{
+  width:100%;
+  margin-top:8px;
+  padding:14px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:#090d12;
+  color:var(--text);
+  font-size:16px;
+}
+textarea{min-height:90px;resize:vertical}
+button{
+  cursor:pointer;
+  font-weight:900;
+  background:linear-gradient(135deg,var(--fire),#b72cff);
+  border:0;
+}
+button.secondary{background:#090d12;border:1px solid var(--cyan);color:var(--cyan)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.workspace{display:grid;grid-template-columns:360px 1fr;gap:16px;align-items:start}
+canvas{
+  width:100%;
+  max-height:760px;
+  object-fit:contain;
+  border:1px solid var(--line);
+  border-radius:22px;
+  background:#000;
+}
+.previewBox{position:sticky;top:92px}
+.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+a{color:var(--cyan)}
+.small{font-size:13px;color:var(--muted)}
+.stat{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:12px;
+}
+.stat div{
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  background:#06090d;
+  color:var(--muted);
+}
+.stat b{display:block;color:var(--gold);font-size:18px;margin-bottom:4px}
+@media(max-width:850px){.workspace{grid-template-columns:1fr}.previewBox{position:static}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">UNIVERSAL DRAGON STUDIO · IMAGE STUDIO V1</div>
+</header>
+
+<div class="wrap">
+  <section class="card">
+    <h1>Image <span>Create + Edit</span></h1>
+    <p>
+      Upload one image, crop it for Shorts/YouTube/Square, add title text, and export a ready thumbnail or promo image.
+      This V1 runs safely in the browser with canvas, so no API key or private upload is needed.
+    </p>
+    <div class="links">
+      <a href="/ai-video.html">AI Video Director</a>
+      <a href="/video-core.html">Video Core</a>
+    </div>
+  </section>
+
+  <section class="workspace">
+    <div class="card">
+      <label>1. Add image</label>
+      <input id="imageInput" type="file" accept="image/*" />
+
+      <div class="row">
+        <div>
+          <label>Canvas type</label>
+          <select id="aspect">
+            <option value="9:16" selected>9:16 Shorts Cover</option>
+            <option value="16:9">16:9 YouTube Thumbnail</option>
+            <option value="1:1">1:1 Square Post</option>
+          </select>
+        </div>
+        <div>
+          <label>Image fit</label>
+          <select id="fit">
+            <option value="cover" selected>Cover / Crop</option>
+            <option value="contain">Contain / Full Image</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Title text</label>
+      <textarea id="titleText">AI-Made in 10s</textarea>
+
+      <div class="row">
+        <div>
+          <label>Text position</label>
+          <select id="textPosition">
+            <option value="top">Top</option>
+            <option value="middle">Middle</option>
+            <option value="bottom" selected>Bottom</option>
+          </select>
+        </div>
+        <div>
+          <label>Text size</label>
+          <input id="textSize" type="number" min="24" max="160" value="72" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Brightness</label>
+          <input id="brightness" type="range" min="60" max="140" value="100" />
+        </div>
+        <div>
+          <label>Contrast</label>
+          <input id="contrast" type="range" min="60" max="160" value="112" />
+        </div>
+      </div>
+
+      <button onclick="renderImage()">Preview / Render</button>
+      <button class="secondary" onclick="downloadImage()">Download PNG</button>
+
+      <div class="stat">
+        <div><b id="outSize">1080×1920</b>Output</div>
+        <div><b id="status">Ready</b>Status</div>
+        <div><b>V1</b>Image Studio</div>
+      </div>
+      <p class="small">Next V2: send exported image into AI Video Director scenes.</p>
+    </div>
+
+    <div class="card previewBox">
+      <label>Preview</label>
+      <canvas id="canvas" width="1080" height="1920"></canvas>
+    </div>
+  </section>
+</div>
+
+<script>
+const imageInput = document.getElementById("imageInput");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const statusBox = document.getElementById("status");
+const outSize = document.getElementById("outSize");
+let loadedImage = null;
+
+const controls = ["aspect","fit","titleText","textPosition","textSize","brightness","contrast"];
+for (const id of controls) {
+  document.getElementById(id).addEventListener("input", () => renderImage());
+}
+
+imageInput.addEventListener("change", () => {
+  const file = imageInput.files[0];
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => {
+    loadedImage = img;
+    renderImage();
+  };
+  img.src = URL.createObjectURL(file);
+});
+
+function setCanvasSize(){
+  const aspect = document.getElementById("aspect").value;
+  if (aspect === "16:9") {
+    canvas.width = 1920;
+    canvas.height = 1080;
+  } else if (aspect === "1:1") {
+    canvas.width = 1080;
+    canvas.height = 1080;
+  } else {
+    canvas.width = 1080;
+    canvas.height = 1920;
+  }
+  outSize.textContent = `${canvas.width}×${canvas.height}`;
+}
+
+function drawBackground(){
+  const g = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  g.addColorStop(0, "#050607");
+  g.addColorStop(0.5, "#12202b");
+  g.addColorStop(1, "#391107");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawImageFit(img){
+  const fit = document.getElementById("fit").value;
+  const scale = fit === "cover"
+    ? Math.max(canvas.width / img.width, canvas.height / img.height)
+    : Math.min(canvas.width / img.width, canvas.height / img.height);
+
+  const w = img.width * scale;
+  const h = img.height * scale;
+  const x = (canvas.width - w) / 2;
+  const y = (canvas.height - h) / 2;
+
+  ctx.drawImage(img, x, y, w, h);
+}
+
+function wrapText(text, maxWidth, fontSize){
+  const words = text.replace(/\s+/g, " ").trim().split(" ");
+  const lines = [];
+  let line = "";
+  for (const word of words) {
+    const test = line ? line + " " + word : word;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = test;
+    }
+  }
+  if (line) lines.push(line);
+  return lines.slice(0, 4);
+}
+
+function drawTextBlock(){
+  const text = document.getElementById("titleText").value.trim();
+  if (!text) return;
+
+  const fontSize = Number(document.getElementById("textSize").value || 72);
+  const pos = document.getElementById("textPosition").value;
+  const margin = Math.round(canvas.width * 0.07);
+  const maxWidth = canvas.width - margin * 2;
+  const lineHeight = Math.round(fontSize * 1.14);
+
+  ctx.font = `900 ${fontSize}px Inter, Arial, sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  const lines = wrapText(text, maxWidth, fontSize);
+  const blockHeight = lines.length * lineHeight;
+
+  let centerY = canvas.height - margin - blockHeight / 2;
+  if (pos === "top") centerY = margin + blockHeight / 2;
+  if (pos === "middle") centerY = canvas.height / 2;
+
+  const boxY = centerY - blockHeight / 2 - fontSize * 0.45;
+  const boxH = blockHeight + fontSize * 0.9;
+  ctx.fillStyle = "rgba(0,0,0,.56)";
+  roundRect(ctx, margin * 0.45, boxY, canvas.width - margin * 0.9, boxH, Math.round(fontSize * 0.35));
+  ctx.fill();
+
+  lines.forEach((line, i) => {
+    const y = centerY - blockHeight / 2 + lineHeight / 2 + i * lineHeight;
+    ctx.lineWidth = Math.max(8, fontSize * 0.12);
+    ctx.strokeStyle = "rgba(0,0,0,.9)";
+    ctx.strokeText(line, canvas.width / 2, y);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(line, canvas.width / 2, y);
+  });
+}
+
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawBrand(){
+  ctx.save();
+  const size = Math.max(28, canvas.width * 0.026);
+  ctx.font = `800 ${size}px Inter, Arial, sans-serif`;
+  ctx.fillStyle = "rgba(255,204,77,.92)";
+  ctx.textAlign = "left";
+  ctx.fillText("UNIVERSAL DRAGON STUDIO", Math.round(canvas.width * 0.05), Math.round(canvas.height * 0.055));
+  ctx.restore();
+}
+
+function renderImage(){
+  setCanvasSize();
+  drawBackground();
+
+  const brightness = Number(document.getElementById("brightness").value || 100);
+  const contrast = Number(document.getElementById("contrast").value || 100);
+  ctx.filter = `brightness(${brightness}%) contrast(${contrast}%)`;
+  if (loadedImage) drawImageFit(loadedImage);
+  ctx.filter = "none";
+
+  // subtle vignette
+  const grd = ctx.createRadialGradient(canvas.width/2, canvas.height/2, canvas.width*0.1, canvas.width/2, canvas.height/2, canvas.width*0.9);
+  grd.addColorStop(0, "rgba(0,0,0,0)");
+  grd.addColorStop(1, "rgba(0,0,0,.55)");
+  ctx.fillStyle = grd;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  drawBrand();
+  drawTextBlock();
+  statusBox.textContent = loadedImage ? "Rendered" : "No image";
+}
+
+function downloadImage(){
+  renderImage();
+  const a = document.createElement("a");
+  a.href = canvas.toDataURL("image/png");
+  a.download = `ud-studio-image-${Date.now()}.png`;
+  a.click();
+}
+
+renderImage();
+</script>
+</body>
+</html>
