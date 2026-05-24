@@ -381,7 +381,7 @@ app.post("/api/video/text-overlay", async (req, res) => {
   try {
     const file = safeName(req.body.file);
     const rawText = safeText(req.body.text || "Universal Dragon Studio")
-      .replace(/[{}\]/g, " ")
+      .replace(/[{}]/g, " ").split("\\").join(" ")
       .slice(0, 120);
 
     const start = String(req.body.start || "00:00:00");
