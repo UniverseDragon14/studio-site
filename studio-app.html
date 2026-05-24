@@ -144,8 +144,8 @@ button{font:inherit}
 function openSheet(id){closeSheets();document.getElementById(id).classList.add('open')}
 function closeSheets(){document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('open'))}
 function filterTools(){const q=document.getElementById('search').value.toLowerCase().trim();document.querySelectorAll('.tool').forEach(card=>{const hay=(card.dataset.name||'')+' '+card.textContent.toLowerCase();card.style.display=hay.includes(q)?'':'none'})}
-function saveMail(){const mail=document.getElementById('mailInput').value.trim();localStorage.setItem('ud_studio_mail',mail);alert(mail?'Mail profile saved locally.':'Mail cleared.')}
-function saveSettings(){localStorage.setItem('ud_creator_name',document.getElementById('nameInput').value.trim());localStorage.setItem('ud_project_name',document.getElementById('projectInput').value.trim());alert('Settings saved locally.')}
+function saveMail(){const mail=document.getElementById('mailInput').value.trim();localStorage.setItem('ud_studio_mail',mail);alert('Studio profile saved safely to Pi5.')}
+function saveSettings(){localStorage.setItem('ud_creator_name',document.getElementById('nameInput').value.trim());localStorage.setItem('ud_project_name',document.getElementById('projectInput').value.trim());alert('Studio profile saved safely to Pi5.')}
 (function init(){const mail=localStorage.getItem('ud_studio_mail');if(mail)document.getElementById('mailInput').value=mail;const name=localStorage.getItem('ud_creator_name');if(name)document.getElementById('nameInput').value=name;const project=localStorage.getItem('ud_project_name');if(project)document.getElementById('projectInput').value=project})();
 
 if ("serviceWorker" in navigator) {
@@ -187,6 +187,37 @@ async function saveProfileCore(){
 saveMail = saveProfileCore;
 saveSettings = saveProfileCore;
 window.addEventListener("load", loadBackendProfile);
+</script>
+
+
+<script id="profile-core-final-override">
+async function udFinalSaveProfile(){
+  const payload = {
+    creator_name: document.getElementById("nameInput")?.value || "Aslam",
+    project_name: document.getElementById("projectInput")?.value || "Universal Dragon Studio",
+    public_email: document.getElementById("publicMailInput")?.value || "univercialdragon@gmail.com",
+    youtube_email: document.getElementById("youtubeMailInput")?.value || "aslamaam78@gmail.com"
+  };
+
+  try{
+    const res = await fetch("/api/studio/profile", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(data.status === "profile_saved"){
+      alert("Studio profile saved safely to Pi5.");
+    }else{
+      alert("Profile save failed.");
+    }
+  }catch(e){
+    alert("Profile save failed. Check server.");
+  }
+}
+
+window.saveSettings = udFinalSaveProfile;
+window.saveMail = udFinalSaveProfile;
 </script>
 
 </body>
