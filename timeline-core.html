@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Universal Dragon Studio | Timeline Core V1</title>
+<meta name="description" content="Universal Dragon Studio Timeline Core V1: visual video preview, trim range, split clips, and export MP4." />
+<meta name="theme-color" content="#ff5a1f" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="icon" href="/ud-icon.svg" type="image/svg+xml" />
+<style>
+:root{
+  --bg:#050607;--panel:#0d1117;--panel2:#151a24;--line:#293142;--text:#f8fafc;--muted:#a8b0bf;
+  --fire:#ff5a1f;--gold:#ffcc4d;--pink:#c02cff;--cyan:#00d9ff;--green:#39ff4a;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;margin:0;background:radial-gradient(circle at 10% 0,rgba(255,90,31,.22),transparent 28%),radial-gradient(circle at 90% 4%,rgba(0,217,255,.16),transparent 30%),radial-gradient(circle at 50% 100%,rgba(192,44,255,.18),transparent 33%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+a{color:var(--cyan);text-decoration:none}button,input,select{font:inherit}button{cursor:pointer}
+.app{min-height:100svh;padding:calc(28px + var(--safe-top)) 16px calc(24px + var(--safe-bottom));max-width:1180px;margin:auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}.brand{display:flex;align-items:center;gap:11px;min-width:0}.mark{width:46px;height:46px;border-radius:17px;background:linear-gradient(135deg,var(--fire),var(--pink));display:grid;place-items:center;font-size:24px;box-shadow:0 0 26px rgba(255,90,31,.28)}.title b{display:block;color:var(--gold);letter-spacing:.09em;text-transform:uppercase;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.title span{color:var(--muted);font-size:12px;font-weight:800}.back{border:1px solid var(--line);border-radius:16px;background:rgba(13,17,23,.82);color:var(--text);padding:12px 14px;font-weight:900}
+.hero{border:1px solid var(--line);border-radius:28px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025));padding:20px;box-shadow:0 22px 70px rgba(0,0,0,.32);margin-bottom:14px}.hero h1{font-size:clamp(34px,7vw,76px);line-height:.92;margin:0;letter-spacing:-1px}.hero h1 span{color:var(--fire)}.hero p{color:var(--muted);line-height:1.55;font-weight:650;max-width:780px}
+.grid{display:grid;grid-template-columns:360px 1fr;gap:14px;align-items:start}.card{border:1px solid var(--line);border-radius:24px;background:rgba(13,17,23,.9);padding:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}label{display:block;color:var(--gold);font-weight:950;margin:12px 0 8px}input,select{width:100%;border:1px solid var(--line);border-radius:16px;background:#080b10;color:var(--text);padding:13px;outline:none}.btn{width:100%;border:0;border-radius:18px;background:linear-gradient(135deg,var(--fire),var(--pink));color:white;padding:14px 16px;font-weight:950;margin-top:10px}.btn.secondary{background:#090d12;border:1px solid var(--cyan);color:var(--cyan)}.btn.safe{background:#092013;border:1px solid rgba(57,255,74,.35);color:var(--green)}.btn.warn{background:#1c1208;border:1px solid rgba(255,204,77,.35);color:var(--gold)}
+.preview video{width:100%;max-height:52svh;border:1px solid var(--line);border-radius:24px;background:#000;display:block}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.meta div{border:1px solid var(--line);border-radius:15px;background:#070a0f;padding:10px;color:var(--muted);font-size:12px}.meta b{display:block;color:var(--gold);font-size:15px;margin-bottom:3px}
+.timeline{margin-top:14px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018));padding:14px}.rail{position:relative;height:76px;border:1px solid #223044;border-radius:18px;background:repeating-linear-gradient(90deg,rgba(255,204,77,.12) 0 2px,transparent 2px 60px),linear-gradient(135deg,rgba(255,90,31,.18),rgba(0,217,255,.1));overflow:hidden}.selection{position:absolute;top:0;bottom:0;background:linear-gradient(90deg,rgba(57,255,74,.22),rgba(0,217,255,.22));border-left:3px solid var(--green);border-right:3px solid var(--cyan);pointer-events:none}.playhead{position:absolute;top:0;bottom:0;width:3px;background:#fff;box-shadow:0 0 18px rgba(255,255,255,.8);left:0;pointer-events:none}.rangeRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.rangeBox{border:1px solid var(--line);border-radius:16px;background:#070a0f;padding:10px}.rangeBox span{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;font-weight:800}.rangeBox input{padding:0;margin-top:8px}.timeRow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.result{white-space:pre-wrap;background:#020408;border:1px solid var(--line);border-radius:18px;padding:12px;min-height:120px;color:var(--green);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;overflow:auto}.links{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}.exportLink{display:block;border:1px solid var(--line);border-radius:16px;background:#080b10;padding:12px;color:var(--cyan);font-weight:900}.hint{color:var(--muted);font-size:13px;line-height:1.45}.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,204,77,.28);color:var(--gold);border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900;margin:0 0 12px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr 1fr}.meta{grid-template-columns:repeat(2,1fr)}.preview video{max-height:45svh}}
+@media(max-width:520px){.app{padding-left:12px;padding-right:12px}.hero{padding:16px;border-radius:24px}.timeRow,.rangeRow,.links{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.top{align-items:flex-start}.title b{font-size:12px}.back{padding:10px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="mark">🐉</div><div class="title"><b>Universal Dragon Studio</b><span>Timeline Core V1 · visual edit foundation</span></div></div>
+    <button class="back" onclick="location.href='/'">Home</button>
+  </header>
+
+  <section class="hero">
+    <div class="badge">🎞️ CapCut-style first brick</div>
+    <h1>Timeline <span>Core</span></h1>
+    <p>Upload a video, preview it, select a start/end range visually, split into two clips, and export MP4 using the existing safe FFmpeg backend. This is not full CapCut yet — this is the real timeline foundation.</p>
+  </section>
+
+  <main class="grid">
+    <section class="card">
+      <label>1. Upload video</label>
+      <input id="videoFile" type="file" accept="video/*" />
+      <button class="btn" onclick="uploadVideo()">Upload to Timeline</button>
+      <p class="hint">Private local Studio tool. Large files may take time on Pi5.</p>
+
+      <label>2. Manual time control</label>
+      <div class="timeRow">
+        <div><label>Start</label><input id="startText" value="00:00:00" onchange="textToRanges()" /></div>
+        <div><label>End</label><input id="endText" value="00:00:10" onchange="textToRanges()" /></div>
+        <div><label>Duration</label><input id="durationText" value="00:00:10" readonly /></div>
+      </div>
+
+      <label>3. Split point</label>
+      <input id="splitText" value="00:00:05" />
+      <button class="btn warn" onclick="setSplitToPlayhead()">Use Current Playhead</button>
+      <button class="btn secondary" onclick="previewSelection()">Preview Selection</button>
+      <button class="btn" onclick="exportSelection()">Export Selected MP4</button>
+      <button class="btn safe" onclick="splitClip()">Split Into 2 Clips</button>
+    </section>
+
+    <section class="card preview">
+      <video id="player" controls playsinline></video>
+      <div class="meta">
+        <div><b id="fileName">No file</b>File</div>
+        <div><b id="videoDuration">0s</b>Duration</div>
+        <div><b id="selectionTime">0s</b>Selection</div>
+        <div><b id="playheadTime">0s</b>Playhead</div>
+      </div>
+
+      <div class="timeline">
+        <div class="rail" id="rail"><div class="selection" id="selection"></div><div class="playhead" id="playhead"></div></div>
+        <div class="rangeRow">
+          <div class="rangeBox"><span><b>Start handle</b><em id="startLabel">00:00:00</em></span><input id="startRange" type="range" min="0" max="1000" value="0" oninput="rangesToText('start')" /></div>
+          <div class="rangeBox"><span><b>End handle</b><em id="endLabel">00:00:10</em></span><input id="endRange" type="range" min="0" max="1000" value="1000" oninput="rangesToText('end')" /></div>
+        </div>
+        <div class="actions">
+          <button class="btn secondary" onclick="jumpStart()">Jump Start</button>
+          <button class="btn secondary" onclick="jumpEnd()">Jump End</button>
+          <button class="btn secondary" onclick="nudge(-0.5)">-0.5s</button>
+          <button class="btn secondary" onclick="nudge(0.5)">+0.5s</button>
+        </div>
+      </div>
+
+      <label>Result</label>
+      <div class="result" id="result">Ready. Upload a video to start timeline editing.</div>
+      <div class="links" id="links"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const player = document.getElementById('player');
+const fileInput = document.getElementById('videoFile');
+const startRange = document.getElementById('startRange');
+const endRange = document.getElementById('endRange');
+const selection = document.getElementById('selection');
+const playhead = document.getElementById('playhead');
+const result = document.getElementById('result');
+const links = document.getElementById('links');
+let uploadedFile = '';
+let duration = 10;
+let previewStop = false;
+
+function show(x){ result.textContent = typeof x === 'string' ? x : JSON.stringify(x, null, 2); }
+function two(n){ return String(Math.floor(n)).padStart(2,'0'); }
+function fmt(sec){ sec = Math.max(0, Number(sec)||0); const h=Math.floor(sec/3600); const m=Math.floor((sec%3600)/60); const s=Math.floor(sec%60); const ms=Math.round((sec-Math.floor(sec))*1000); return `${two(h)}:${two(m)}:${two(s)}${ms ? '.'+String(ms).padStart(3,'0') : ''}`; }
+function pretty(sec){ sec = Math.max(0, Number(sec)||0); const m=Math.floor(sec/60); const s=Math.floor(sec%60); return m ? `${m}m ${s}s` : `${s}s`; }
+function parseTime(t){ const p=String(t||'0').split(':').map(Number); if(p.length===3) return p[0]*3600+p[1]*60+p[2]; if(p.length===2) return p[0]*60+p[1]; return Number(t)||0; }
+function startSec(){ return Number(startRange.value)/100; }
+function endSec(){ return Number(endRange.value)/100; }
+function selectedDuration(){ return Math.max(0.2, endSec()-startSec()); }
+function setRangeMax(){ const max = Math.max(100, Math.floor(duration*100)); startRange.max = max; endRange.max = max; }
+function updateUI(){
+  let s = startSec(); let e = endSec();
+  if(e <= s + 0.2){ e = s + 0.2; endRange.value = Math.min(Number(endRange.max), Math.floor(e*100)); }
+  document.getElementById('startText').value = fmt(s);
+  document.getElementById('endText').value = fmt(e);
+  document.getElementById('durationText').value = fmt(e-s);
+  document.getElementById('startLabel').textContent = fmt(s);
+  document.getElementById('endLabel').textContent = fmt(e);
+  document.getElementById('videoDuration').textContent = pretty(duration);
+  document.getElementById('selectionTime').textContent = pretty(e-s);
+  const left = (s / duration) * 100;
+  const width = ((e-s) / duration) * 100;
+  selection.style.left = `${Math.max(0,left)}%`;
+  selection.style.width = `${Math.min(100,width)}%`;
+}
+function rangesToText(changed){
+  if(changed === 'start' && Number(startRange.value) >= Number(endRange.value)) startRange.value = Math.max(0, Number(endRange.value)-20);
+  if(changed === 'end' && Number(endRange.value) <= Number(startRange.value)) endRange.value = Math.min(Number(endRange.max), Number(startRange.value)+20);
+  updateUI();
+}
+function textToRanges(){
+  const s = Math.max(0, parseTime(document.getElementById('startText').value));
+  const e = Math.min(duration, Math.max(s+0.2, parseTime(document.getElementById('endText').value)));
+  startRange.value = Math.floor(s*100); endRange.value = Math.floor(e*100); updateUI();
+}
+async function uploadVideo(){
+  const f = fileInput.files[0];
+  if(!f){ show('Choose a video first.'); return; }
+  show('Uploading video to Pi5 timeline...'); links.innerHTML='';
+  const fd = new FormData(); fd.append('video', f);
+  const res = await fetch('/api/video/upload', { method:'POST', body:fd });
+  const data = await res.json();
+  if(!res.ok){ show(data); return; }
+  uploadedFile = data.file;
+  document.getElementById('fileName').textContent = uploadedFile.slice(0,28);
+  player.src = `/uploads/${uploadedFile}`;
+  player.onloadedmetadata = () => {
+    duration = Number(player.duration || 10);
+    setRangeMax(); startRange.value = 0; endRange.value = Math.min(Number(endRange.max), Math.floor(Math.min(duration,10)*100));
+    document.getElementById('splitText').value = fmt(Math.min(duration/2, 5));
+    updateUI();
+    show({ status:'timeline_ready', file:uploadedFile, duration_seconds:Number(duration.toFixed(2)), note:'Use handles to choose range, then export or split.' });
+    saveRecent('Timeline Core V1', '/timeline-core.html', 'timeline', 'Visual trim/split editor opened');
+  };
+}
+function previewSelection(){ if(!uploadedFile){ show('Upload video first.'); return; } previewStop = true; player.currentTime = startSec(); setTimeout(()=>{previewStop = false; player.play();},120); }
+function jumpStart(){ player.currentTime = startSec(); }
+function jumpEnd(){ player.currentTime = endSec(); }
+function nudge(delta){ const t = Math.max(0, Math.min(duration, player.currentTime + delta)); player.currentTime = t; }
+function setSplitToPlayhead(){ document.getElementById('splitText').value = fmt(player.currentTime || startSec()); }
+player.addEventListener('timeupdate', () => {
+  document.getElementById('playheadTime').textContent = pretty(player.currentTime || 0);
+  playhead.style.left = `${Math.min(100, ((player.currentTime||0)/duration)*100)}%`;
+  if(!previewStop && player.currentTime >= endSec() && !player.paused){ player.pause(); player.currentTime = startSec(); }
+});
+async function exportSelection(){
+  if(!uploadedFile){ show('Upload video first.'); return; }
+  const payload = { file: uploadedFile, start: fmt(startSec()), duration: fmt(selectedDuration()) };
+  show('Exporting selected MP4 with FFmpeg...');
+  const res = await fetch('/api/video/trim', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+  const data = await res.json();
+  show(data);
+  if(data.url){ addLink('Open exported MP4', data.url); saveRecent('Exported Timeline Clip', data.url, 'export', `Selected ${fmt(startSec())} to ${fmt(endSec())}`); }
+}
+async function splitClip(){
+  if(!uploadedFile){ show('Upload video first.'); return; }
+  const split = Math.max(0.2, Math.min(duration-0.2, parseTime(document.getElementById('splitText').value)));
+  show('Splitting into 2 clips with existing trim endpoint...'); links.innerHTML='';
+  const first = { file: uploadedFile, start:'00:00:00', duration:fmt(split) };
+  const second = { file: uploadedFile, start:fmt(split), duration:fmt(duration-split) };
+  const r1 = await fetch('/api/video/trim', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(first) });
+  const d1 = await r1.json();
+  const r2 = await fetch('/api/video/trim', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(second) });
+  const d2 = await r2.json();
+  show({ status:'split_done', split_at:fmt(split), part_1:d1, part_2:d2 });
+  if(d1.url) addLink('Open Part 1', d1.url);
+  if(d2.url) addLink('Open Part 2', d2.url);
+  saveRecent('Split Timeline Clips', '/timeline-core.html', 'timeline', `Split at ${fmt(split)}`);
+}
+function addLink(label,url){ const a=document.createElement('a'); a.className='exportLink'; a.href=url; a.target='_blank'; a.textContent=label; links.appendChild(a); }
+async function saveRecent(title,url,type,note){ try{ await fetch('/api/studio/projects',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({title,url,type,note}) }); }catch(e){} }
+updateUI();
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>null); }
+</script>
+</body>
+</html>
