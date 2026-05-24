@@ -374,10 +374,11 @@ app.post("/api/video/trim", async (req, res) => {
 });
 
 
+
 app.post("/api/video/text-overlay", async (req, res) => {
   try {
     const file = safeName(req.body.file);
-    const text = safeText(req.body.text || "Universal Dragon Studio").replace(/[:'\\]/g, " ");
+    const rawText = safeText(req.body.text || "Universal Dragon Studio").slice(0, 120);
     const start = String(req.body.start || "00:00:00");
     const duration = String(req.body.duration || "00:00:05");
     const position = safeText(req.body.position || "bottom");
@@ -393,11 +394,16 @@ app.post("/api/video/text-overlay", async (req, res) => {
     const outputName = `text_${Date.now()}_${file.replace(/\.[^.]+$/, "")}.mp4`;
     const output = path.join(OUTPUT_DIR, outputName);
 
+    const textFileName = `overlay_text_${Date.now()}.txt`;
+    const textFile = path.join(OUTPUT_DIR, textFileName);
+    fs.writeFileSync(textFile, rawText || "Universal Dragon Studio", "utf8");
+
     let y = "h-th-80";
     if (position === "top") y = "60";
     if (position === "center") y = "(h-th)/2";
 
-    const vf = `drawtext=text='${text}':fontcolor=white:fontsize=${fontSize}:box=1:boxcolor=black@0.55:boxborderw=18:x=(w-text_w)/2:y=${y}:enable='between(t,0,${duration.replace(/[^0-9.]/g, "") || 5})'`;
+    const safeTextFile = textFile.replace(/\/g, "/");
+    const vf = `drawtext=textfile='${safeTextFile}':fontcolor=white:fontsize=${fontSize}:box=1:boxcolor=black@0.55:boxborderw=18:x=(w-text_w)/2:y=${y}`;
 
     await runCmd("ffmpeg", [
       "-y",
@@ -406,24 +412,31 @@ app.post("/api/video/text-overlay", async (req, res) => {
       "-t", duration,
       "-vf", vf,
       "-c:v", "libx264",
-      "-preset", "veryfast",
-      "-crf", "23",
+      "-preset", "ultrafast",
+      "-crf", "24",
+      "-pix_fmt", "yuv420p",
       "-c:a", "aac",
+      "-b:a", "128k",
       "-movflags", "+faststart",
       output
     ]);
 
+    try { fs.unlinkSync(textFile); } catch {}
+
     res.json({
       status: "text_overlay_done",
       input: file,
+      text: rawText,
       output: outputName,
       url: `/videos_output/${outputName}`
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message.slice(0, 1000) });
+    res.status(500).json({ error: String(err.message || err).slice(0, 1500) });
   }
 });
+
+
 
 
 app.post("/api/video/extract-audio", async (req, res) => {
