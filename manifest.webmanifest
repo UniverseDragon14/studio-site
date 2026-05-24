@@ -1,0 +1,20 @@
+{
+  "name": "Universal Dragon Studio",
+  "short_name": "UD Studio",
+  "description": "Universal Dragon Studio Creator OS for image, video, AI creator tools, mail workflow, and project tools.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06070b",
+  "theme_color": "#ff5a1f",
+  "categories": ["productivity", "photo", "video", "utilities"],
+  "icons": [
+    {
+      "src": "/ud-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
