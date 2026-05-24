@@ -59,79 +59,11 @@ button{font:inherit}
 .bottomNav{padding:8px 18px calc(10px + var(--safe-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:8px;border-top:1px solid rgba(255,255,255,.08);background:rgba(6,7,11,.84);backdrop-filter:blur(16px)}
 .navItem{border:0;background:transparent;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:900}.navItem .navIcon{font-size:22px}.navItem.active{color:var(--gold)}.createBtn{transform:translateY(-18px);display:grid;place-items:center}.createBtn .plus{width:62px;height:62px;border-radius:24px;border:0;background:linear-gradient(135deg,var(--fire),var(--pink));color:white;font-size:34px;font-weight:950;box-shadow:0 18px 45px rgba(192,44,255,.38)}
 .sheet{position:fixed;inset:auto 14px calc(78px + var(--safe-bottom)) 14px;background:rgba(17,20,29,.985);border:1px solid var(--line);border-radius:28px;padding:16px;box-shadow:0 30px 90px rgba(0,0,0,.58);transform:translateY(120%);opacity:0;pointer-events:none;transition:.22s ease;z-index:10}.sheet.open{transform:translateY(0);opacity:1;pointer-events:auto}.sheetHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.sheetHead b{color:var(--gold);font-size:18px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.quick{border:1px solid var(--line);border-radius:18px;background:#090d12;color:var(--text);padding:14px;text-align:left;cursor:pointer;font-weight:900}.quick span{display:block;color:var(--muted);font-size:12px;font-weight:650;margin-top:4px}.profileBox{display:grid;gap:10px}.profileBox input{width:100%;height:48px;border:1px solid var(--line);border-radius:16px;background:#090d12;color:var(--text);padding:0 12px;outline:none}.statusLine{border:1px solid rgba(57,255,74,.25);background:rgba(57,255,74,.06);color:var(--green);padding:10px;border-radius:16px;font-size:13px;font-weight:750}.projectBadge{display:inline-block;margin-bottom:7px;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,204,77,.25);color:var(--gold);font-size:10px;text-transform:uppercase;letter-spacing:.08em}
-
-.todayFlow{
-  grid-column:1/-1;
-  border:1px solid rgba(255,204,77,.22);
-  border-radius:24px;
-  padding:14px;
-  background:
-    linear-gradient(135deg,rgba(255,90,31,.12),rgba(0,217,255,.08)),
-    rgba(17,20,29,.72);
-  box-shadow:0 18px 45px rgba(0,0,0,.28);
-}
-.flowHead{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:10px;
-}
-.flowHead b{
-  color:var(--gold);
-  font-size:17px;
-  font-weight:950;
-}
-.flowHead span{
-  color:var(--muted);
-  font-size:12px;
-  font-weight:800;
-}
-.flowSteps{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:9px;
-}
-.flowStep{
-  border:1px solid var(--line);
-  border-radius:17px;
-  background:rgba(6,9,13,.82);
-  color:var(--text);
-  padding:11px;
-  text-align:left;
-  cursor:pointer;
-}
-.flowStep strong{
-  display:block;
-  color:var(--cyan);
-  font-size:12px;
-  margin-bottom:5px;
-}
-.flowStep span{
-  display:block;
-  font-size:13px;
-  font-weight:900;
-}
-.flowStep small{
-  display:block;
-  color:var(--muted);
-  font-size:10px;
-  margin-top:3px;
-  font-weight:750;
-}
-
-@media(max-width:760px){.topbar{padding:calc(32px + var(--safe-top)) 16px 9px}.main{padding:0 14px 8px;gap:10px}.tools{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.tool{min-height:104px;border-radius:22px;padding:9px 7px}.tool .ico{width:48px;height:48px;border-radius:18px;font-size:24px}.tool b{font-size:13.5px}.tool span{font-size:10.5px}.hero{padding:15px;border-radius:24px}.hero p{font-size:13px}.brand b{font-size:14px}}
+.todayFlow{grid-column:1/-1;border:1px solid rgba(255,204,77,.22);border-radius:24px;padding:14px;background:linear-gradient(135deg,rgba(255,90,31,.12),rgba(0,217,255,.08)),rgba(17,20,29,.72);box-shadow:0 18px 45px rgba(0,0,0,.28)}
+.flowHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.flowHead b{color:var(--gold);font-size:17px;font-weight:950}.flowHead span{color:var(--muted);font-size:12px;font-weight:800}.flowSteps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.flowStep{border:1px solid var(--line);border-radius:17px;background:rgba(6,9,13,.82);color:var(--text);padding:11px;text-align:left;cursor:pointer}.flowStep strong{display:block;color:var(--cyan);font-size:12px;margin-bottom:5px}.flowStep span{display:block;font-size:13px;font-weight:900}.flowStep small{display:block;color:var(--muted);font-size:10px;margin-top:3px;font-weight:750}
+@media(max-width:760px){.topbar{padding:calc(32px + var(--safe-top)) 16px 9px}.main{padding:0 14px 8px;gap:10px}.tools{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.tool{min-height:104px;border-radius:22px;padding:9px 7px}.tool .ico{width:48px;height:48px;border-radius:18px;font-size:24px}.tool b{font-size:13.5px}.tool span{font-size:10.5px}.hero{padding:15px;border-radius:24px}.hero p{font-size:13px}.brand b{font-size:14px}.flowSteps{grid-template-columns:repeat(2,minmax(0,1fr))}.todayFlow{padding:12px;border-radius:22px}.flowHead{align-items:flex-start;flex-direction:column;gap:3px}}
 @media(max-height:770px){.hero p{display:none}.hero{padding:14px 16px}.tool{min-height:92px}.tool span{display:none}.searchWrap input{height:48px}.bottomNav{padding-top:6px}.createBtn .plus{width:58px;height:58px}}
-
-@media(max-width:760px){
-  .flowSteps{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .todayFlow{padding:12px;border-radius:22px}
-  .flowHead{align-items:flex-start;flex-direction:column;gap:3px}
-}
-@media(max-height:760px){
-  .todayFlow{display:none}
-}
-
+@media(max-height:760px){.todayFlow{display:none}}
 </style>
 </head>
 <body>
@@ -149,38 +81,25 @@ button{font:inherit}
       <h1>What will you <span>create</span> today?</h1>
       <p>Image create/edit, video create/edit, AI video plan, creator package, mail workflow, and project tools in one clean app-style dashboard.</p>
     </section>
-    <div class="searchWrap"><span>⌕</span><input id="search" placeholder="Search tools: image, video, thumbnail, mail..." oninput="filterTools()" /></div>
+    <div class="searchWrap"><span>⌕</span><input id="search" placeholder="Search tools: image, video, timeline, mail..." oninput="filterTools()" /></div>
     <section class="tools" id="tools">
       <a class="tool" href="/image-studio.html" data-name="image photo thumbnail editor"><div class="ico">🖼️</div><b>Image Studio</b><span>Thumbnails and promo images</span></a>
       <a class="tool" href="/ai-video.html" data-name="ai video prompt storyboard images plan"><div class="ico">🎬</div><b>AI Video Director</b><span>Prompt to scenes and plans</span></a>
-      <a class="tool" href="/video-core.html" data-name="video edit trim audio shorts mp4"><div class="ico">✂️</div><b>Video Core</b><span>Trim, audio, creator package</span></a>
+      <a class="tool" href="/timeline-core.html" data-name="timeline video edit trim split capcut"><div class="ico">🎞️</div><b>Timeline Core</b><span>Visual trim and split editor</span></a>
       <button class="tool" onclick="openSheet('mailSheet')" data-name="email gmail mail connect draft"><div class="ico">✉️</div><b>Mail Connect</b><span>Draft workflow later</span></button>
       <a class="tool" href="/ai-video.html#imageFiles" data-name="upload images to video order slideshow"><div class="ico">🧩</div><b>Images to Video</b><span>Upload images and build MP4</span></a>
       <a class="tool" href="/index.html" data-name="website app builder portfolio landing"><div class="ico">🌐</div><b>Website Builder</b><span>Public site and app plans</span></a>
       <button class="tool" onclick="openSheet('projectsSheet')" data-name="projects files recent saved"><div class="ico">📁</div><b>Projects</b><span>Local shortcuts</span></button>
       <button class="tool" onclick="openSheet('settingsSheet')" data-name="settings profile safety account"><div class="ico">⚙️</div><b>Settings</b><span>Profile and safety</span></button>
-
       <div class="todayFlow">
-        <div class="flowHead">
-          <b>Today’s Workflow</b>
-          <span>simple • safe • approval-first</span>
-        </div>
+        <div class="flowHead"><b>Today’s Workflow</b><span>simple • safe • approval-first</span></div>
         <div class="flowSteps">
-          <button class="flowStep" onclick="location.href='/image-studio.html'">
-            <strong>01</strong><span>Create image</span><small>thumbnail / promo</small>
-          </button>
-          <button class="flowStep" onclick="location.href='/ai-video.html'">
-            <strong>02</strong><span>Plan video</span><small>scenes / prompts</small>
-          </button>
-          <button class="flowStep" onclick="location.href='/ai-video.html#imageFiles'">
-            <strong>03</strong><span>Images to video</span><small>ordered MP4</small>
-          </button>
-          <button class="flowStep" onclick="openSheet('projectsSheet')">
-            <strong>04</strong><span>Save project</span><small>recent work</small>
-          </button>
+          <button class="flowStep" onclick="location.href='/image-studio.html'"><strong>01</strong><span>Create image</span><small>thumbnail / promo</small></button>
+          <button class="flowStep" onclick="location.href='/ai-video.html'"><strong>02</strong><span>Plan video</span><small>scenes / prompts</small></button>
+          <button class="flowStep" onclick="location.href='/timeline-core.html'"><strong>03</strong><span>Timeline edit</span><small>visual trim / split</small></button>
+          <button class="flowStep" onclick="openSheet('projectsSheet')"><strong>04</strong><span>Save project</span><small>recent work</small></button>
         </div>
       </div>
-
     </section>
   </main>
 
@@ -198,7 +117,7 @@ button{font:inherit}
   <div class="grid2">
     <button class="quick" onclick="location.href='/image-studio.html'">🖼️ Image / Thumbnail<span>Edit image, add text, export PNG</span></button>
     <button class="quick" onclick="location.href='/ai-video.html'">🎬 AI Video Plan<span>Prompt to storyboard and image prompts</span></button>
-    <button class="quick" onclick="location.href='/video-core.html'">✂️ Video Edit<span>Trim, audio, creator package</span></button>
+    <button class="quick" onclick="location.href='/timeline-core.html'">🎞️ Timeline Edit<span>Visual trim, split, export MP4</span></button>
     <button class="quick" onclick="openSheet('mailSheet')">✉️ Mail Draft<span>Connect workflow later, no auto-send</span></button>
   </div>
 </section>
@@ -234,139 +153,18 @@ button{font:inherit}
 function openSheet(id){closeSheets();document.getElementById(id).classList.add('open')}
 function closeSheets(){document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('open'))}
 function filterTools(){const q=document.getElementById('search').value.toLowerCase().trim();document.querySelectorAll('.tool').forEach(card=>{const hay=(card.dataset.name||'')+' '+card.textContent.toLowerCase();card.style.display=hay.includes(q)?'':'none'})}
-function saveMail(){const mail=document.getElementById('mailInput').value.trim();localStorage.setItem('ud_studio_mail',mail);alert('Studio profile saved safely to Pi5.')}
-function saveSettings(){localStorage.setItem('ud_creator_name',document.getElementById('nameInput').value.trim());localStorage.setItem('ud_project_name',document.getElementById('projectInput').value.trim());alert('Studio profile saved safely to Pi5.')}
-(function init(){const mail=localStorage.getItem('ud_studio_mail');if(mail)document.getElementById('mailInput').value=mail;const name=localStorage.getItem('ud_creator_name');if(name)document.getElementById('nameInput').value=name;const project=localStorage.getItem('ud_project_name');if(project)document.getElementById('projectInput').value=project})();
-
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js").catch(() => null);
-}
+function saveMail(){alert('Studio profile saved safely to Pi5.')}
+function saveSettings(){alert('Studio profile saved safely to Pi5.')}
+if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/sw.js").catch(() => null); }
+async function loadBackendProfile(){try{const res=await fetch('/api/studio/profile');const data=await res.json();const p=data.profile||{};if(document.getElementById('nameInput'))document.getElementById('nameInput').value=p.creator_name||'Aslam';if(document.getElementById('projectInput'))document.getElementById('projectInput').value=p.project_name||'Universal Dragon Studio';if(document.getElementById('publicMailInput'))document.getElementById('publicMailInput').value=p.public_email||'univercialdragon@gmail.com';if(document.getElementById('youtubeMailInput'))document.getElementById('youtubeMailInput').value=p.youtube_email||'aslamaam78@gmail.com'}catch(e){}}
+async function udFinalSaveProfile(){const payload={creator_name:document.getElementById('nameInput')?.value||'Aslam',project_name:document.getElementById('projectInput')?.value||'Universal Dragon Studio',public_email:document.getElementById('publicMailInput')?.value||'univercialdragon@gmail.com',youtube_email:document.getElementById('youtubeMailInput')?.value||'aslamaam78@gmail.com'};try{const res=await fetch('/api/studio/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await res.json();alert(data.status==='profile_saved'?'Studio profile saved safely to Pi5.':'Profile save failed.')}catch(e){alert('Profile save failed. Check server.')}}
+window.saveSettings=udFinalSaveProfile;window.saveMail=udFinalSaveProfile;window.addEventListener('load',loadBackendProfile);
+async function loadRecentProjects(){try{const res=await fetch('/api/studio/projects');const data=await res.json();renderRecentProjects(data.projects||[])}catch(e){}}
+function renderRecentProjects(projects){const box=document.getElementById('recentProjectsBox');if(!box)return;box.innerHTML=projects.slice(0,4).map(p=>`<button class="quick" onclick="openProject('${String(p.url||'/').replace(/'/g,'')}')"><span class="projectBadge">${p.type||'project'}</span>${p.title||'Untitled'}<span>${p.note||'Recent Studio work'}</span></button>`).join('')}
+async function saveRecentProject(project){try{await fetch('/api/studio/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(project)})}catch(e){}}
+function openProject(url){location.href=url||'/'}
+document.addEventListener('click',(e)=>{const card=e.target.closest('.tool');if(!card)return;const href=card.getAttribute('href');const title=card.querySelector('b')?.textContent?.trim();const note=card.querySelector('span:last-child')?.textContent?.trim();if(href&&title){saveRecentProject({title,url:href,type:'tool',note:note||'Opened from Studio Home'})}});
+window.addEventListener('load',loadRecentProjects);
 </script>
-
-<script>
-async function loadBackendProfile(){
-  try{
-    const res = await fetch("/api/studio/profile");
-    const data = await res.json();
-    const p = data.profile || {};
-    if(document.getElementById("nameInput")) document.getElementById("nameInput").value = p.creator_name || "Aslam";
-    if(document.getElementById("projectInput")) document.getElementById("projectInput").value = p.project_name || "Universal Dragon Studio";
-    if(document.getElementById("publicMailInput")) document.getElementById("publicMailInput").value = p.public_email || "univercialdragon@gmail.com";
-    if(document.getElementById("youtubeMailInput")) document.getElementById("youtubeMailInput").value = p.youtube_email || "aslamaam78@gmail.com";
-  }catch(e){}
-}
-
-async function saveProfileCore(){
-  const payload = {
-    creator_name: document.getElementById("nameInput")?.value || "Aslam",
-    project_name: document.getElementById("projectInput")?.value || "Universal Dragon Studio",
-    public_email: document.getElementById("publicMailInput")?.value || "univercialdragon@gmail.com",
-    youtube_email: document.getElementById("youtubeMailInput")?.value || "aslamaam78@gmail.com"
-  };
-
-  const res = await fetch("/api/studio/profile", {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify(payload)
-  });
-
-  const data = await res.json();
-  alert(data.status === "profile_saved" ? "Studio profile saved safely." : "Profile save failed.");
-}
-
-saveMail = saveProfileCore;
-saveSettings = saveProfileCore;
-window.addEventListener("load", loadBackendProfile);
-</script>
-
-
-<script id="profile-core-final-override">
-async function udFinalSaveProfile(){
-  const payload = {
-    creator_name: document.getElementById("nameInput")?.value || "Aslam",
-    project_name: document.getElementById("projectInput")?.value || "Universal Dragon Studio",
-    public_email: document.getElementById("publicMailInput")?.value || "univercialdragon@gmail.com",
-    youtube_email: document.getElementById("youtubeMailInput")?.value || "aslamaam78@gmail.com"
-  };
-
-  try{
-    const res = await fetch("/api/studio/profile", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify(payload)
-    });
-    const data = await res.json();
-    if(data.status === "profile_saved"){
-      alert("Studio profile saved safely to Pi5.");
-    }else{
-      alert("Profile save failed.");
-    }
-  }catch(e){
-    alert("Profile save failed. Check server.");
-  }
-}
-
-window.saveSettings = udFinalSaveProfile;
-window.saveMail = udFinalSaveProfile;
-</script>
-
-
-<script id="recent-projects-core-v1">
-async function loadRecentProjects(){
-  try{
-    const res = await fetch("/api/studio/projects");
-    const data = await res.json();
-    renderRecentProjects(data.projects || []);
-  }catch(e){}
-}
-
-function renderRecentProjects(projects){
-  const box = document.getElementById("recentProjectsBox");
-  if(!box) return;
-
-  box.innerHTML = projects.slice(0, 4).map(p => `
-    <button class="quick" onclick="openProject('${String(p.url || "/").replace(/'/g, "")}')">
-      <span class="projectBadge">${p.type || "project"}</span>
-      ${p.title || "Untitled"}
-      <span>${p.note || "Recent Studio work"}</span>
-    </button>
-  `).join("");
-}
-
-async function saveRecentProject(project){
-  try{
-    await fetch("/api/studio/projects", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify(project)
-    });
-  }catch(e){}
-}
-
-function openProject(url){
-  location.href = url || "/";
-}
-
-document.addEventListener("click", (e) => {
-  const card = e.target.closest(".tool");
-  if(!card) return;
-
-  const href = card.getAttribute("href");
-  const title = card.querySelector("b")?.textContent?.trim();
-  const note = card.querySelector("span:last-child")?.textContent?.trim();
-
-  if(href && title){
-    saveRecentProject({
-      title,
-      url: href,
-      type: "tool",
-      note: note || "Opened from Studio Home"
-    });
-  }
-});
-
-window.addEventListener("load", loadRecentProjects);
-</script>
-
 </body>
 </html>
