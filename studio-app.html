@@ -57,7 +57,7 @@ button{font:inherit}
 .tool b{font-size:14px;line-height:1.08;color:var(--text);font-weight:950}.tool span{font-size:11px;color:var(--muted);line-height:1.15;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%}
 .bottomNav{padding:8px 18px calc(10px + var(--safe-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:8px;border-top:1px solid rgba(255,255,255,.08);background:rgba(6,7,11,.84);backdrop-filter:blur(16px)}
 .navItem{border:0;background:transparent;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:900}.navItem .navIcon{font-size:22px}.navItem.active{color:var(--gold)}.createBtn{transform:translateY(-18px);display:grid;place-items:center}.createBtn .plus{width:62px;height:62px;border-radius:24px;border:0;background:linear-gradient(135deg,var(--fire),var(--pink));color:white;font-size:34px;font-weight:950;box-shadow:0 18px 45px rgba(192,44,255,.38)}
-.sheet{position:fixed;inset:auto 14px calc(78px + var(--safe-bottom)) 14px;background:rgba(17,20,29,.985);border:1px solid var(--line);border-radius:28px;padding:16px;box-shadow:0 30px 90px rgba(0,0,0,.58);transform:translateY(120%);opacity:0;pointer-events:none;transition:.22s ease;z-index:10}.sheet.open{transform:translateY(0);opacity:1;pointer-events:auto}.sheetHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.sheetHead b{color:var(--gold);font-size:18px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.quick{border:1px solid var(--line);border-radius:18px;background:#090d12;color:var(--text);padding:14px;text-align:left;cursor:pointer;font-weight:900}.quick span{display:block;color:var(--muted);font-size:12px;font-weight:650;margin-top:4px}.profileBox{display:grid;gap:10px}.profileBox input{width:100%;height:48px;border:1px solid var(--line);border-radius:16px;background:#090d12;color:var(--text);padding:0 12px;outline:none}.statusLine{border:1px solid rgba(57,255,74,.25);background:rgba(57,255,74,.06);color:var(--green);padding:10px;border-radius:16px;font-size:13px;font-weight:750}
+.sheet{position:fixed;inset:auto 14px calc(78px + var(--safe-bottom)) 14px;background:rgba(17,20,29,.985);border:1px solid var(--line);border-radius:28px;padding:16px;box-shadow:0 30px 90px rgba(0,0,0,.58);transform:translateY(120%);opacity:0;pointer-events:none;transition:.22s ease;z-index:10}.sheet.open{transform:translateY(0);opacity:1;pointer-events:auto}.sheetHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.sheetHead b{color:var(--gold);font-size:18px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.quick{border:1px solid var(--line);border-radius:18px;background:#090d12;color:var(--text);padding:14px;text-align:left;cursor:pointer;font-weight:900}.quick span{display:block;color:var(--muted);font-size:12px;font-weight:650;margin-top:4px}.profileBox{display:grid;gap:10px}.profileBox input{width:100%;height:48px;border:1px solid var(--line);border-radius:16px;background:#090d12;color:var(--text);padding:0 12px;outline:none}.statusLine{border:1px solid rgba(57,255,74,.25);background:rgba(57,255,74,.06);color:var(--green);padding:10px;border-radius:16px;font-size:13px;font-weight:750}.projectBadge{display:inline-block;margin-bottom:7px;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,204,77,.25);color:var(--gold);font-size:10px;text-transform:uppercase;letter-spacing:.08em}
 @media(max-width:760px){.topbar{padding:13px 16px 9px}.main{padding:0 14px 8px;gap:10px}.tools{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.tool{min-height:104px;border-radius:22px;padding:9px 7px}.tool .ico{width:48px;height:48px;border-radius:18px;font-size:24px}.tool b{font-size:13.5px}.tool span{font-size:10.5px}.hero{padding:15px;border-radius:24px}.hero p{font-size:13px}.brand b{font-size:14px}}
 @media(max-height:770px){.hero p{display:none}.hero{padding:14px 16px}.tool{min-height:92px}.tool span{display:none}.searchWrap input{height:48px}.bottomNav{padding-top:6px}.createBtn .plus{width:58px;height:58px}}
 </style>
@@ -132,6 +132,7 @@ button{font:inherit}
 
 <section class="sheet" id="projectsSheet">
   <div class="sheetHead"><b>Projects</b><button class="iconBtn" onclick="closeSheets()">×</button></div>
+  <div id="recentProjectsBox" class="grid2" style="margin-bottom:12px"></div>
   <div class="grid2">
     <button class="quick" onclick="location.href='/image-studio.html'">Image Studio V1<span>Thumbnail and cover design</span></button>
     <button class="quick" onclick="location.href='/ai-video.html'">AI Video Director V1<span>Storyboard + image prompts</span></button>
@@ -218,6 +219,64 @@ async function udFinalSaveProfile(){
 
 window.saveSettings = udFinalSaveProfile;
 window.saveMail = udFinalSaveProfile;
+</script>
+
+
+<script id="recent-projects-core-v1">
+async function loadRecentProjects(){
+  try{
+    const res = await fetch("/api/studio/projects");
+    const data = await res.json();
+    renderRecentProjects(data.projects || []);
+  }catch(e){}
+}
+
+function renderRecentProjects(projects){
+  const box = document.getElementById("recentProjectsBox");
+  if(!box) return;
+
+  box.innerHTML = projects.slice(0, 4).map(p => `
+    <button class="quick" onclick="openProject('${String(p.url || "/").replace(/'/g, "")}')">
+      <span class="projectBadge">${p.type || "project"}</span>
+      ${p.title || "Untitled"}
+      <span>${p.note || "Recent Studio work"}</span>
+    </button>
+  `).join("");
+}
+
+async function saveRecentProject(project){
+  try{
+    await fetch("/api/studio/projects", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(project)
+    });
+  }catch(e){}
+}
+
+function openProject(url){
+  location.href = url || "/";
+}
+
+document.addEventListener("click", (e) => {
+  const card = e.target.closest(".tool");
+  if(!card) return;
+
+  const href = card.getAttribute("href");
+  const title = card.querySelector("b")?.textContent?.trim();
+  const note = card.querySelector("span:last-child")?.textContent?.trim();
+
+  if(href && title){
+    saveRecentProject({
+      title,
+      url: href,
+      type: "tool",
+      note: note || "Opened from Studio Home"
+    });
+  }
+});
+
+window.addEventListener("load", loadRecentProjects);
 </script>
 
 </body>

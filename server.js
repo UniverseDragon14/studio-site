@@ -21,6 +21,7 @@ const UPLOAD_DIR = path.join(__dirname, "uploads");
 const OUTPUT_DIR = path.join(__dirname, "videos_output");
 const PRIVATE_DATA_DIR = path.join(__dirname, ".studio_data");
 const PROFILE_PATH = path.join(PRIVATE_DATA_DIR, "studio_profile.json");
+const PROJECTS_PATH = path.join(PRIVATE_DATA_DIR, "recent_projects.json");
 
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -97,6 +98,79 @@ function writeStudioProfile(input) {
 }
 
 
+
+function defaultRecentProjects() {
+  return [
+    {
+      id: "image-studio-v1",
+      title: "Image Studio V1",
+      type: "image",
+      url: "/image-studio.html",
+      note: "Thumbnail and promo image design",
+      updated_at: new Date().toISOString()
+    },
+    {
+      id: "ai-video-director-v1",
+      title: "AI Video Director V1",
+      type: "ai-video",
+      url: "/ai-video.html",
+      note: "Storyboard and image prompt workflow",
+      updated_at: new Date().toISOString()
+    },
+    {
+      id: "video-core-v1",
+      title: "Video Core V1",
+      type: "video",
+      url: "/video-core.html",
+      note: "Trim, audio, creator package",
+      updated_at: new Date().toISOString()
+    }
+  ];
+}
+
+function cleanProjectValue(v, max = 180) {
+  return String(v || "").replace(/[<>\r\n]/g, "").trim().slice(0, max);
+}
+
+function readRecentProjects() {
+  try {
+    if (!fs.existsSync(PROJECTS_PATH)) {
+      const fresh = defaultRecentProjects();
+      fs.writeFileSync(PROJECTS_PATH, JSON.stringify(fresh, null, 2));
+      return fresh;
+    }
+    const raw = JSON.parse(fs.readFileSync(PROJECTS_PATH, "utf8"));
+    return Array.isArray(raw) ? raw.slice(0, 30) : defaultRecentProjects();
+  } catch {
+    return defaultRecentProjects();
+  }
+}
+
+function writeRecentProjects(items) {
+  const safe = (Array.isArray(items) ? items : []).slice(0, 30);
+  fs.writeFileSync(PROJECTS_PATH, JSON.stringify(safe, null, 2));
+  return safe;
+}
+
+function addRecentProject(input = {}) {
+  const title = cleanProjectValue(input.title || "Untitled Project", 80);
+  const url = cleanProjectValue(input.url || "/", 140);
+  const type = cleanProjectValue(input.type || "project", 40);
+  const note = cleanProjectValue(input.note || "", 160);
+
+  const item = {
+    id: `${Date.now()}_${title.toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 40)}`,
+    title,
+    type,
+    url,
+    note,
+    updated_at: new Date().toISOString()
+  };
+
+  const existing = readRecentProjects().filter(x => x.url !== item.url || x.title !== item.title);
+  return writeRecentProjects([item, ...existing]);
+}
+
 function requireStudioBrain(res) {
   if (!process.env.GROQ_API_KEY) {
     res.status(500).json({ error: "Studio Brain API key missing on server." });
@@ -136,6 +210,31 @@ const upload = multer({
   limits: { fileSize: 1024 * 1024 * 1024 * 3 }
 });
 
+
+
+app.get("/api/studio/projects", (req, res) => {
+  res.json({
+    status: "ok",
+    projects: readRecentProjects()
+  });
+});
+
+app.post("/api/studio/projects", (req, res) => {
+  const projects = addRecentProject(req.body || {});
+  res.json({
+    status: "project_saved",
+    projects
+  });
+});
+
+app.post("/api/studio/projects/clear", (req, res) => {
+  const fresh = defaultRecentProjects();
+  writeRecentProjects(fresh);
+  res.json({
+    status: "projects_reset",
+    projects: fresh
+  });
+});
 
 app.get("/api/studio/profile", (req, res) => {
   res.json({
