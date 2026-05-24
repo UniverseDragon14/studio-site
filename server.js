@@ -24,6 +24,9 @@ fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
 app.use(express.json({ limit: "2mb" }));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "studio-app.html"));
+});
 app.use(express.static(__dirname));
 app.use("/videos_output", express.static(OUTPUT_DIR));
 
@@ -35,6 +38,20 @@ function safeName(name) {
   return String(name || "video")
     .replace(/[^a-zA-Z0-9._-]/g, "_")
     .slice(0, 120);
+}
+
+function requireStudioBrain(res) {
+  if (!process.env.GROQ_API_KEY) {
+    res.status(500).json({ error: "Studio Brain API key missing on server." });
+    return false;
+  }
+
+  if (!GROQ_MODEL) {
+    res.status(500).json({ error: "Studio Brain model missing on server." });
+    return false;
+  }
+
+  return true;
 }
 
 function runCmd(cmd, args) {
@@ -80,9 +97,7 @@ app.post("/api/build", async (req, res) => {
       return res.status(400).json({ error: "Idea is required." });
     }
 
-    if (!process.env.GROQ_API_KEY) {
-      return res.status(500).json({ error: "Studio Brain API key missing on server." });
-    }
+    if (!requireStudioBrain(res)) return;
 
     const prompt = `
 You are UD Studio Builder, a practical AI product planning assistant.
@@ -108,7 +123,7 @@ Return a customer-facing app/web build blueprint only.
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: DISPLAY_MODEL_NAME,
+        model: GROQ_MODEL,
         messages: [
           { role: "system", content: "You are UD Studio Builder for Universal Dragon. Keep outputs safe, practical, and customer-facing." },
           { role: "user", content: prompt }
@@ -127,7 +142,7 @@ Return a customer-facing app/web build blueprint only.
     }
 
     const text = data?.choices?.[0]?.message?.content || "No output returned.";
-    res.json({ output: text, model: GROQ_MODEL });
+    res.json({ output: text, model: DISPLAY_MODEL_NAME });
 
   } catch (err) {
     res.status(500).json({ error: err.message || "Server error" });
@@ -186,7 +201,6 @@ app.post("/api/video/trim", async (req, res) => {
   }
 });
 
-
 app.post("/api/video/extract-audio", async (req, res) => {
   try {
     const file = safeName(req.body.file);
@@ -221,15 +235,13 @@ app.post("/api/video/extract-audio", async (req, res) => {
   }
 });
 
-
-
 app.post("/api/video/ai-plan", async (req, res) => {
   try {
     const file = safeName(req.body.file);
     const goal = safeText(req.body.goal || "Create a YouTube creator package and shorts plan.");
 
     if (!file) return res.status(400).json({ error: "file is required." });
-    if (!process.env.GROQ_API_KEY) return res.status(500).json({ error: "Studio Brain API key missing on server." });
+    if (!requireStudioBrain(res)) return;
 
     const input = path.join(UPLOAD_DIR, file);
     if (!input.startsWith(UPLOAD_DIR) || !fs.existsSync(input)) {
@@ -285,7 +297,7 @@ Keep it practical, professional, and creator-focused.
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: DISPLAY_MODEL_NAME,
+        model: GROQ_MODEL,
         messages: [
           { role: "system", content: "You are Universal Dragon Studio, a practical AI video editing and creator package assistant." },
           { role: "user", content: prompt }
@@ -309,8 +321,6 @@ Keep it practical, professional, and creator-focused.
   }
 });
 
-
-
 app.post("/api/video/creator-package", async (req, res) => {
   try {
     const file = safeName(req.body.file || "");
@@ -318,9 +328,7 @@ app.post("/api/video/creator-package", async (req, res) => {
     const start = safeText(req.body.start || "00:00:00");
     const duration = safeText(req.body.duration || "00:00:30");
 
-    if (!process.env.GROQ_API_KEY) {
-      return res.status(500).json({ error: "Studio Brain API key missing on server." });
-    }
+    if (!requireStudioBrain(res)) return;
 
     const prompt = `
 You are Universal Dragon Studio Creator Package AI.
@@ -362,7 +370,7 @@ Do not mention private APIs, tokens, internal IPs, or server secrets.
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: DISPLAY_MODEL_NAME,
+        model: GROQ_MODEL,
         messages: [
           { role: "system", content: "You are Universal Dragon Studio AI for creator video packaging. Be practical and useful." },
           { role: "user", content: prompt }
@@ -391,8 +399,6 @@ Do not mention private APIs, tokens, internal IPs, or server secrets.
   }
 });
 
-
-
 app.post("/api/ai/storyboard", async (req, res) => {
   try {
     const prompt = safeText(req.body.prompt || "");
@@ -403,9 +409,7 @@ app.post("/api/ai/storyboard", async (req, res) => {
       return res.status(400).json({ error: "Prompt is required." });
     }
 
-    if (!process.env.GROQ_API_KEY) {
-      return res.status(500).json({ error: "Studio Brain API key missing on server." });
-    }
+    if (!requireStudioBrain(res)) return;
 
     const aiPrompt = `
 You are Universal Dragon Studio AI Video Director.
@@ -454,7 +458,7 @@ Rules:
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: DISPLAY_MODEL_NAME,
+        model: GROQ_MODEL,
         messages: [
           { role: "system", content: "You are Universal Dragon Studio AI Video Director. Generate practical storyboards, image prompts, and creator packages." },
           { role: "user", content: aiPrompt }
@@ -482,8 +486,6 @@ Rules:
     res.status(500).json({ error: err.message || "Server error" });
   }
 });
-
-
 
 app.post("/api/images/upload", upload.array("images", 40), async (req, res) => {
   try {
@@ -563,7 +565,6 @@ app.post("/api/images/render-video", async (req, res) => {
     res.status(500).json({ error: err.message.slice(0, 1000) });
   }
 });
-
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`UD Studio server running: http://0.0.0.0:${PORT}`);
