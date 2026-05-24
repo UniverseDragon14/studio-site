@@ -28,6 +28,91 @@ fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 fs.mkdirSync(PRIVATE_DATA_DIR, { recursive: true });
 
 app.use(express.json({ limit: "2mb" }));
+
+// UD_TEXT_OVERLAY_EARLY_ROUTE_V3
+app.post("/api/video/text-overlay", async (req, res) => {
+  try {
+    const file = safeName(req.body.file || "");
+    const rawText = safeText(req.body.text || "Universal Dragon Studio")
+      .replace(/[{}]/g, " ")
+      .replace(/[\r\n]/g, " ")
+      .split(String.fromCharCode(92)).join(" ")
+      .slice(0, 120);
+
+    const start = String(req.body.start || "00:00:00");
+    const duration = String(req.body.duration || "00:00:05");
+    const position = safeText(req.body.position || "bottom");
+    const fontSize = Math.max(18, Math.min(72, Number(req.body.fontSize || 42)));
+
+    if (!file) return res.status(400).json({ error: "file is required." });
+
+    const input = path.join(UPLOAD_DIR, file);
+    if (!input.startsWith(UPLOAD_DIR) || !fs.existsSync(input)) {
+      return res.status(404).json({ error: "Input video not found.", file });
+    }
+
+    const outputName = `text_${Date.now()}_${file.replace(/\.[^.]+$/, "")}.mp4`;
+    const output = path.join(OUTPUT_DIR, outputName);
+
+    const assName = `overlay_${Date.now()}.ass`;
+    const assPath = path.join(OUTPUT_DIR, assName);
+
+    let alignment = 2;
+    let marginV = 70;
+    if (position === "top") { alignment = 8; marginV = 70; }
+    if (position === "center") { alignment = 5; marginV = 0; }
+
+    const ass = `[Script Info]
+ScriptType: v4.00+
+PlayResX: 1280
+PlayResY: 720
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: UDText,Arial,${fontSize},&H00FFFFFF,&H00FFFFFF,&HAA000000,&HAA000000,1,0,0,0,100,100,0,0,3,2,1,${alignment},40,40,${marginV},1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,9:59:59.00,UDText,,0,0,0,,${rawText}
+`;
+
+    fs.writeFileSync(assPath, ass, "utf8");
+
+    const assForFilter = assPath.split(path.sep).join("/");
+
+    await runCmd("ffmpeg", [
+      "-y",
+      "-ss", start,
+      "-i", input,
+      "-t", duration,
+      "-vf", `subtitles=${assForFilter}`,
+      "-c:v", "libx264",
+      "-preset", "ultrafast",
+      "-crf", "24",
+      "-pix_fmt", "yuv420p",
+      "-c:a", "aac",
+      "-b:a", "128k",
+      "-movflags", "+faststart",
+      output
+    ]);
+
+    try { fs.unlinkSync(assPath); } catch {}
+
+    res.json({
+      status: "text_overlay_done",
+      engine: "early_ass_subtitle_overlay",
+      input: file,
+      text: rawText,
+      output: outputName,
+      url: `/videos_output/${outputName}`
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: String(err.message || err).slice(0, 1500) });
+  }
+});
+
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "studio-app.html"));
 });
