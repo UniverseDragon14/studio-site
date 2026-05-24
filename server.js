@@ -375,6 +375,7 @@ app.post("/api/video/trim", async (req, res) => {
 
 
 
+
 app.post("/api/video/text-overlay", async (req, res) => {
   try {
     const file = safeName(req.body.file);
@@ -435,6 +436,8 @@ app.post("/api/video/text-overlay", async (req, res) => {
     res.status(500).json({ error: String(err.message || err).slice(0, 1500) });
   }
 });
+
+
 
 
 
