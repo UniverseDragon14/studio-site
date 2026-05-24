@@ -7,3 +7,7 @@ dist/
 build/
 npm-debug.log
 .DS_Store
+
+backups/
+uploads/
+videos_output/

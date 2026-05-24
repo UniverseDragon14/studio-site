@@ -1,6 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import path from "path";
+import fs from "fs";
+import multer from "multer";
+import { execFile } from "child_process";
 import { fileURLToPath } from "url";
 
 dotenv.config();
@@ -13,12 +16,60 @@ const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.json({ limit: "1mb" }));
+const UPLOAD_DIR = path.join(__dirname, "uploads");
+const OUTPUT_DIR = path.join(__dirname, "videos_output");
+
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+
+app.use(express.json({ limit: "2mb" }));
 app.use(express.static(__dirname));
+app.use("/videos_output", express.static(OUTPUT_DIR));
 
 function safeText(v) {
   return String(v || "").slice(0, 3000);
 }
+
+function safeName(name) {
+  return String(name || "video")
+    .replace(/[^a-zA-Z0-9._-]/g, "_")
+    .slice(0, 120);
+}
+
+function runCmd(cmd, args) {
+  return new Promise((resolve, reject) => {
+    execFile(cmd, args, { timeout: 1000 * 60 * 30 }, (error, stdout, stderr) => {
+      if (error) {
+        reject(new Error(stderr || error.message));
+      } else {
+        resolve({ stdout, stderr });
+      }
+    });
+  });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
+  filename: (req, file, cb) => {
+    const stamp = Date.now();
+    cb(null, `${stamp}_${safeName(file.originalname)}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 1024 * 1024 * 1024 * 3 }
+});
+
+app.get("/api/studio/health", (req, res) => {
+  res.json({
+    status: "ok",
+    service: "universal-dragon-studio",
+    video_core: "v1",
+    ffmpeg: "enabled",
+    brain: GROQ_MODEL
+  });
+});
 
 app.post("/api/build", async (req, res) => {
   try {
@@ -47,49 +98,6 @@ Customer idea:
 ${idea}
 
 Return a customer-facing app/web build blueprint only.
-
-STRICT RULES:
-- Do NOT output raw code.
-- Do NOT output terminal commands.
-- Do NOT output API keys, backend secrets, private IPs, or internal file paths.
-- Do NOT explain hacking or offensive security.
-- Only describe the app/website/system that will be built.
-- Keep it professional like Replit/Vercel/AI Studio product planning.
-- Mention that implementation files are prepared internally by UD Studio after approval.
-
-Return in this exact format:
-
-STATUS:
-PROJECT NAME:
-PRODUCT TYPE:
-TARGET USERS:
-BEST PACKAGE:
-PRICE ESTIMATE AED:
-DELIVERY TIME:
-
-PROMOTED IDEA:
-Explain the idea in 3 clear lines.
-
-APP / WEBSITE SCREENS:
-List pages/screens the customer will get.
-
-MAIN FEATURES:
-List practical product features.
-
-DESIGN STYLE:
-Describe look and feel.
-
-AI / AUTOMATION:
-Mention only safe useful AI features.
-
-SECURITY / PRIVACY:
-Mention defensive privacy-safe setup.
-
-WHAT UD STUDIO WILL BUILD:
-Explain what will be created internally, without showing code.
-
-NEXT ACTION:
-Tell user to approve or contact UD Studio.
 `;
 
     const response = await fetch(GROQ_API_URL, {
@@ -125,7 +133,60 @@ Tell user to approve or contact UD Studio.
   }
 });
 
+app.post("/api/video/upload", upload.single("video"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No video uploaded." });
+
+    res.json({
+      status: "uploaded",
+      file: req.file.filename,
+      original: req.file.originalname,
+      size_mb: Number((req.file.size / 1024 / 1024).toFixed(2))
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/video/trim", async (req, res) => {
+  try {
+    const file = safeName(req.body.file);
+    const start = String(req.body.start || "00:00:00");
+    const duration = String(req.body.duration || "00:00:10");
+
+    if (!file) return res.status(400).json({ error: "file is required." });
+
+    const input = path.join(UPLOAD_DIR, file);
+    if (!input.startsWith(UPLOAD_DIR) || !fs.existsSync(input)) {
+      return res.status(404).json({ error: "Input video not found." });
+    }
+
+    const outputName = `trim_${Date.now()}_${file.replace(/\.[^.]+$/, "")}.mp4`;
+    const output = path.join(OUTPUT_DIR, outputName);
+
+    await runCmd("ffmpeg", [
+      "-y",
+      "-ss", start,
+      "-i", input,
+      "-t", duration,
+      "-c", "copy",
+      "-avoid_negative_ts", "make_zero",
+      output
+    ]);
+
+    res.json({
+      status: "trimmed",
+      input: file,
+      output: outputName,
+      url: `/videos_output/${outputName}`
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message.slice(0, 1000) });
+  }
+});
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`UD Studio server running: http://0.0.0.0:${PORT}`);
   console.log(`Build brain: ${GROQ_MODEL}`);
+  console.log("Video Core V1: upload + trim enabled");
 });
