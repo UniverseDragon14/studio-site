@@ -7,7 +7,8 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8089;
-const KIMI_MODEL = process.env.KIMI_MODEL || "kimi-k2.6";
+const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,8 +28,8 @@ app.post("/api/build", async (req, res) => {
       return res.status(400).json({ error: "Idea is required." });
     }
 
-    if (!process.env.MOONSHOT_API_KEY) {
-      return res.status(500).json({ error: "Kimi API key missing on server." });
+    if (!process.env.GROQ_API_KEY) {
+      return res.status(500).json({ error: "Groq API key missing on server." });
     }
 
     const prompt = `
@@ -37,7 +38,7 @@ You are UD Studio Builder, a practical AI product planning assistant.
 Rules:
 - Do not overhype.
 - Do not mention private API keys, server secrets, or internal IPs.
-- Focus on websites, web apps, AI tools, dashboards, automation, and defensive security systems.
+- Focus on websites, web apps, AI tools, dashboards, automation, photo/video tools, creator tools, and defensive security systems.
 - Output must be professional and useful for a customer.
 - Give clear price estimate in AED.
 - Keep it concise.
@@ -89,8 +90,35 @@ Explain what will be created internally, without showing code.
 
 NEXT ACTION:
 Tell user to approve or contact UD Studio.
-";
-    res.json({ output: text, model: KIMI_MODEL });
+`;
+
+    const response = await fetch(GROQ_API_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        messages: [
+          { role: "system", content: "You are UD Studio Builder for Universal Dragon. Keep outputs safe, practical, and customer-facing." },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.4,
+        max_tokens: 900
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        error: data?.error?.message || "Groq API request failed."
+      });
+    }
+
+    const text = data?.choices?.[0]?.message?.content || "No output returned.";
+    res.json({ output: text, model: GROQ_MODEL });
 
   } catch (err) {
     res.status(500).json({ error: err.message || "Server error" });
@@ -99,5 +127,5 @@ Tell user to approve or contact UD Studio.
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`UD Studio server running: http://0.0.0.0:${PORT}`);
-  console.log(`Build brain: ${KIMI_MODEL}`);
+  console.log(`Build brain: ${GROQ_MODEL}`);
 });
