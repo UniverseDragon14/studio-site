@@ -376,14 +376,18 @@ app.post("/api/video/trim", async (req, res) => {
 
 
 
+
 app.post("/api/video/text-overlay", async (req, res) => {
   try {
     const file = safeName(req.body.file);
-    const rawText = safeText(req.body.text || "Universal Dragon Studio").slice(0, 120);
+    const rawText = safeText(req.body.text || "Universal Dragon Studio")
+      .replace(/[{}\]/g, " ")
+      .slice(0, 120);
+
     const start = String(req.body.start || "00:00:00");
     const duration = String(req.body.duration || "00:00:05");
     const position = safeText(req.body.position || "bottom");
-    const fontSize = Math.max(18, Math.min(96, Number(req.body.fontSize || 42)));
+    const fontSize = Math.max(18, Math.min(72, Number(req.body.fontSize || 42)));
 
     if (!file) return res.status(400).json({ error: "file is required." });
 
@@ -395,23 +399,38 @@ app.post("/api/video/text-overlay", async (req, res) => {
     const outputName = `text_${Date.now()}_${file.replace(/\.[^.]+$/, "")}.mp4`;
     const output = path.join(OUTPUT_DIR, outputName);
 
-    const textFileName = `overlay_text_${Date.now()}.txt`;
-    const textFile = path.join(OUTPUT_DIR, textFileName);
-    fs.writeFileSync(textFile, rawText || "Universal Dragon Studio", "utf8");
+    const assName = `overlay_${Date.now()}.ass`;
+    const assPath = path.join(OUTPUT_DIR, assName);
 
-    let y = "h-th-80";
-    if (position === "top") y = "60";
-    if (position === "center") y = "(h-th)/2";
+    let alignment = 2; // bottom center
+    let marginV = 70;
+    if (position === "top") { alignment = 8; marginV = 70; }
+    if (position === "center") { alignment = 5; marginV = 0; }
 
-    const safeTextFile = textFile.replace(/\/g, "/");
-    const vf = `drawtext=textfile='${safeTextFile}':fontcolor=white:fontsize=${fontSize}:box=1:boxcolor=black@0.55:boxborderw=18:x=(w-text_w)/2:y=${y}`;
+    const ass = `[Script Info]
+ScriptType: v4.00+
+PlayResX: 1280
+PlayResY: 720
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: UDText,Arial,${fontSize},&H00FFFFFF,&H00FFFFFF,&HAA000000,&HAA000000,1,0,0,0,100,100,0,0,3,2,1,${alignment},40,40,${marginV},1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,9:59:59.00,UDText,,0,0,0,,${rawText}
+`;
+
+    fs.writeFileSync(assPath, ass, "utf8");
+
+    const assForFilter = assPath.replace(/\/g, "/").replace(/:/g, "\:");
 
     await runCmd("ffmpeg", [
       "-y",
       "-ss", start,
       "-i", input,
       "-t", duration,
-      "-vf", vf,
+      "-vf", `subtitles='${assForFilter}'`,
       "-c:v", "libx264",
       "-preset", "ultrafast",
       "-crf", "24",
@@ -422,10 +441,11 @@ app.post("/api/video/text-overlay", async (req, res) => {
       output
     ]);
 
-    try { fs.unlinkSync(textFile); } catch {}
+    try { fs.unlinkSync(assPath); } catch {}
 
     res.json({
       status: "text_overlay_done",
+      engine: "ass_subtitle_overlay",
       input: file,
       text: rawText,
       output: outputName,
@@ -436,6 +456,8 @@ app.post("/api/video/text-overlay", async (req, res) => {
     res.status(500).json({ error: String(err.message || err).slice(0, 1500) });
   }
 });
+
+
 
 
 
