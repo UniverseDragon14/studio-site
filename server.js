@@ -373,6 +373,59 @@ app.post("/api/video/trim", async (req, res) => {
   }
 });
 
+
+app.post("/api/video/text-overlay", async (req, res) => {
+  try {
+    const file = safeName(req.body.file);
+    const text = safeText(req.body.text || "Universal Dragon Studio").replace(/[:'\\]/g, " ");
+    const start = String(req.body.start || "00:00:00");
+    const duration = String(req.body.duration || "00:00:05");
+    const position = safeText(req.body.position || "bottom");
+    const fontSize = Math.max(18, Math.min(96, Number(req.body.fontSize || 42)));
+
+    if (!file) return res.status(400).json({ error: "file is required." });
+
+    const input = path.join(UPLOAD_DIR, file);
+    if (!input.startsWith(UPLOAD_DIR) || !fs.existsSync(input)) {
+      return res.status(404).json({ error: "Input video not found." });
+    }
+
+    const outputName = `text_${Date.now()}_${file.replace(/\.[^.]+$/, "")}.mp4`;
+    const output = path.join(OUTPUT_DIR, outputName);
+
+    let y = "h-th-80";
+    if (position === "top") y = "60";
+    if (position === "center") y = "(h-th)/2";
+
+    const vf = `drawtext=text='${text}':fontcolor=white:fontsize=${fontSize}:box=1:boxcolor=black@0.55:boxborderw=18:x=(w-text_w)/2:y=${y}:enable='between(t,0,${duration.replace(/[^0-9.]/g, "") || 5})'`;
+
+    await runCmd("ffmpeg", [
+      "-y",
+      "-ss", start,
+      "-i", input,
+      "-t", duration,
+      "-vf", vf,
+      "-c:v", "libx264",
+      "-preset", "veryfast",
+      "-crf", "23",
+      "-c:a", "aac",
+      "-movflags", "+faststart",
+      output
+    ]);
+
+    res.json({
+      status: "text_overlay_done",
+      input: file,
+      output: outputName,
+      url: `/videos_output/${outputName}`
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message.slice(0, 1000) });
+  }
+});
+
+
 app.post("/api/video/extract-audio", async (req, res) => {
   try {
     const file = safeName(req.body.file);

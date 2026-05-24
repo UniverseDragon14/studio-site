@@ -59,6 +59,29 @@ a{color:var(--cyan);text-decoration:none}button,input,select{font:inherit}button
       <button class="btn secondary" onclick="previewSelection()">Preview Selection</button>
       <button class="btn" onclick="exportSelection()">Export Selected MP4</button>
       <button class="btn safe" onclick="splitClip()">Split Into 2 Clips</button>
+
+      <label>4. Text Overlay Layer</label>
+      <input id="overlayText" value="Universal Dragon Studio" placeholder="Text to show on video" />
+      <div class="timeRow">
+        <div>
+          <label>Position</label>
+          <select id="overlayPosition">
+            <option value="bottom">Bottom</option>
+            <option value="center">Center</option>
+            <option value="top">Top</option>
+          </select>
+        </div>
+        <div>
+          <label>Font size</label>
+          <input id="overlayFontSize" value="42" />
+        </div>
+        <div>
+          <label>Layer</label>
+          <input value="Text Overlay" readonly />
+        </div>
+      </div>
+      <button class="btn" onclick="exportTextOverlay()">Export With Text Overlay</button>
+
     </section>
 
     <section class="card preview">
@@ -192,6 +215,35 @@ async function splitClip(){
   if(d2.url) addLink('Open Part 2', d2.url);
   saveRecent('Split Timeline Clips', '/timeline-core.html', 'timeline', `Split at ${fmt(split)}`);
 }
+
+async function exportTextOverlay(){
+  if(!uploadedFile){ show('Upload video first.'); return; }
+
+  const payload = {
+    file: uploadedFile,
+    start: fmt(startSec()),
+    duration: fmt(selectedDuration()),
+    text: document.getElementById('overlayText')?.value || 'Universal Dragon Studio',
+    position: document.getElementById('overlayPosition')?.value || 'bottom',
+    fontSize: document.getElementById('overlayFontSize')?.value || 42
+  };
+
+  show('Burning text overlay into selected video with FFmpeg...');
+  const res = await fetch('/api/video/text-overlay', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  show(data);
+
+  if(data.url){
+    addLink('Open text overlay MP4', data.url);
+    saveRecent('Text Overlay Export', data.url, 'caption', `Text: ${payload.text}`);
+  }
+}
+
 function addLink(label,url){ const a=document.createElement('a'); a.className='exportLink'; a.href=url; a.target='_blank'; a.textContent=label; links.appendChild(a); }
 async function saveRecent(title,url,type,note){ try{ await fetch('/api/studio/projects',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({title,url,type,note}) }); }catch(e){} }
 updateUI();
