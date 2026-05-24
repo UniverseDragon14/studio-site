@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Universal Dragon Studio App</title>
 <meta name="description" content="Universal Dragon Studio app shell for image, video, AI creator tools, mail connection, and settings." />
+<meta name="theme-color" content="#ff5a1f" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="UD Studio" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="icon" href="/ud-icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/ud-icon.svg" />
 <style>
 :root{
   --bg:#06070b;
@@ -139,6 +146,10 @@ function filterTools(){const q=document.getElementById('search').value.toLowerCa
 function saveMail(){const mail=document.getElementById('mailInput').value.trim();localStorage.setItem('ud_studio_mail',mail);alert(mail?'Mail profile saved locally.':'Mail cleared.')}
 function saveSettings(){localStorage.setItem('ud_creator_name',document.getElementById('nameInput').value.trim());localStorage.setItem('ud_project_name',document.getElementById('projectInput').value.trim());alert('Settings saved locally.')}
 (function init(){const mail=localStorage.getItem('ud_studio_mail');if(mail)document.getElementById('mailInput').value=mail;const name=localStorage.getItem('ud_creator_name');if(name)document.getElementById('nameInput').value=name;const project=localStorage.getItem('ud_project_name');if(project)document.getElementById('projectInput').value=project})();
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch(() => null);
+}
 </script>
 </body>
 </html>
