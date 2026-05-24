@@ -48,7 +48,7 @@ h1{font-size:clamp(32px,7vw,68px);line-height:.95;margin:8px 0}
 h1 span{color:var(--fire)}
 p{color:var(--muted);line-height:1.6}
 label{display:block;margin-top:14px;font-weight:800;color:var(--gold)}
-input,button{
+input,button,textarea{
   width:100%;
   margin-top:8px;
   padding:14px;
@@ -124,6 +124,13 @@ a{color:var(--cyan)}
       </div>
     </div>
     <button onclick="trimVideo()">Trim / Export MP4</button>
+    <button onclick="extractAudio()">Extract Audio MP3</button>
+  </section>
+
+  <section class="card">
+    <label>3. AI Creator Package</label>
+    <textarea id="videoGoal" placeholder="Example: Make this video into YouTube shorts with title, description, tags, thumbnail prompt, and editing plan.">Make this video into YouTube shorts with title, description, tags, thumbnail prompt, and editing plan.</textarea>
+    <button onclick="aiPlan()" onclick="generateCreatorPackage()">Generate AI Creator Package</button>
   </section>
 
   <section class="card">
@@ -187,6 +194,75 @@ async function trimVideo(){
       <p><a href="${data.url}" target="_blank">Open exported MP4</a></p>
       <video controls src="${data.url}"></video>
     `;
+  }
+}
+
+async function extractAudio(){
+  const file = uploadedFile.value.trim();
+  if(!file){ show("Upload video first."); return; }
+
+  show("Extracting audio MP3 with FFmpeg...");
+
+  const res = await fetch("/api/video/extract-audio", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ file })
+  });
+
+  const data = await res.json();
+  show(data);
+
+  if(data.url){
+    videoBox.innerHTML += `
+      <p><a href="${data.url}" target="_blank">Open extracted MP3</a></p>
+      <audio controls src="${data.url}" style="width:100%;margin-top:12px"></audio>
+    `;
+  }
+}
+
+async function aiPlan(){
+  const file = uploadedFile.value.trim();
+  if(!file){ show("Upload video first."); return; }
+
+  const goal = document.getElementById("videoGoal").value.trim();
+
+  show("Groq AI is creating creator package...");
+
+  const res = await fetch("/api/video/ai-plan", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ file, goal })
+  });
+
+  const data = await res.json();
+
+  if(data.output){
+    result.textContent = data.output;
+  } else {
+    show(data);
+  }
+}
+
+async function generateCreatorPackage(){
+  const file = uploadedFile.value.trim();
+  const requestBox = document.querySelector("#creatorRequest") || document.querySelector("textarea");
+  const request = requestBox ? requestBox.value.trim() : "Make this video into YouTube shorts with title, description, tags, thumbnail prompt, and editing plan.";
+  const start = document.getElementById("startTime").value.trim() || "00:00:00";
+  const duration = document.getElementById("duration").value.trim() || "00:00:30";
+
+  show("Generating AI Creator Package with Groq...");
+
+  const res = await fetch("/api/video/creator-package", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ file, request, start, duration })
+  });
+
+  const data = await res.json();
+  if(data.output){
+    result.textContent = data.output;
+  } else {
+    show(data);
   }
 }
 </script>

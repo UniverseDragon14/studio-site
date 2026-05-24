@@ -185,6 +185,212 @@ app.post("/api/video/trim", async (req, res) => {
   }
 });
 
+
+app.post("/api/video/extract-audio", async (req, res) => {
+  try {
+    const file = safeName(req.body.file);
+
+    if (!file) return res.status(400).json({ error: "file is required." });
+
+    const input = path.join(UPLOAD_DIR, file);
+    if (!input.startsWith(UPLOAD_DIR) || !fs.existsSync(input)) {
+      return res.status(404).json({ error: "Input video not found." });
+    }
+
+    const outputName = `audio_${Date.now()}_${file.replace(/\.[^.]+$/, "")}.mp3`;
+    const output = path.join(OUTPUT_DIR, outputName);
+
+    await runCmd("ffmpeg", [
+      "-y",
+      "-i", input,
+      "-vn",
+      "-acodec", "libmp3lame",
+      "-q:a", "4",
+      output
+    ]);
+
+    res.json({
+      status: "audio_extracted",
+      input: file,
+      output: outputName,
+      url: `/videos_output/${outputName}`
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message.slice(0, 1000) });
+  }
+});
+
+
+
+app.post("/api/video/ai-plan", async (req, res) => {
+  try {
+    const file = safeName(req.body.file);
+    const goal = safeText(req.body.goal || "Create a YouTube creator package and shorts plan.");
+
+    if (!file) return res.status(400).json({ error: "file is required." });
+    if (!process.env.GROQ_API_KEY) return res.status(500).json({ error: "Groq API key missing on server." });
+
+    const input = path.join(UPLOAD_DIR, file);
+    if (!input.startsWith(UPLOAD_DIR) || !fs.existsSync(input)) {
+      return res.status(404).json({ error: "Input video not found." });
+    }
+
+    let meta = {};
+    try {
+      const probe = await runCmd("ffprobe", [
+        "-v", "error",
+        "-print_format", "json",
+        "-show_format",
+        "-show_streams",
+        input
+      ]);
+      meta = JSON.parse(probe.stdout || "{}");
+    } catch {
+      meta = { note: "ffprobe metadata unavailable" };
+    }
+
+    const prompt = `
+You are Universal Dragon Studio AI video editor.
+
+This is NOT a simple converter. Create a useful creator/editor package.
+
+Video file:
+${file}
+
+Video metadata JSON:
+${JSON.stringify(meta).slice(0, 2500)}
+
+User goal:
+${goal}
+
+Return:
+1. Best title ideas
+2. YouTube description
+3. Tags / hashtags
+4. Thumbnail concept prompt
+5. Shorts clip ideas with timestamp suggestions
+6. Editing style
+7. Caption style
+8. Export recommendation
+9. Next manual action for editor
+
+Keep it practical, professional, and creator-focused.
+`;
+
+    const response = await fetch(GROQ_API_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        messages: [
+          { role: "system", content: "You are Universal Dragon Studio, a practical AI video editing and creator package assistant." },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.45,
+        max_tokens: 1100
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: data?.error?.message || "Groq request failed." });
+    }
+
+    const output = data?.choices?.[0]?.message?.content || "No AI plan returned.";
+    res.json({ status: "ai_plan_ready", file, model: GROQ_MODEL, output });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message.slice(0, 1000) });
+  }
+});
+
+
+
+app.post("/api/video/creator-package", async (req, res) => {
+  try {
+    const file = safeName(req.body.file || "");
+    const request = safeText(req.body.request || "");
+    const start = safeText(req.body.start || "00:00:00");
+    const duration = safeText(req.body.duration || "00:00:30");
+
+    if (!process.env.GROQ_API_KEY) {
+      return res.status(500).json({ error: "Groq API key missing on server." });
+    }
+
+    const prompt = `
+You are Universal Dragon Studio Creator Package AI.
+
+Create a practical YouTube Shorts / Reels / TikTok creator package.
+
+Video file name:
+${file || "not provided"}
+
+Clip start:
+${start}
+
+Clip duration:
+${duration}
+
+User request:
+${request}
+
+Return:
+1. Short video concept
+2. Best title options
+3. YouTube description
+4. Hashtags
+5. Thumbnail prompt
+6. Hook text for first 3 seconds
+7. Caption/subtitle style
+8. Editing plan
+9. Export recommendation
+10. Next improvement suggestion
+
+Keep it practical, creator-focused, and concise.
+Do not mention private APIs, tokens, internal IPs, or server secrets.
+`;
+
+    const response = await fetch(GROQ_API_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        messages: [
+          { role: "system", content: "You are Universal Dragon Studio AI for creator video packaging. Be practical and useful." },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.5,
+        max_tokens: 900
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        error: data?.error?.message || "Groq API request failed."
+      });
+    }
+
+    res.json({
+      status: "creator_package_ready",
+      model: GROQ_MODEL,
+      output: data?.choices?.[0]?.message?.content || "No output returned."
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message || "Server error" });
+  }
+});
+
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`UD Studio server running: http://0.0.0.0:${PORT}`);
   console.log(`Build brain: ${GROQ_MODEL}`);
