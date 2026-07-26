@@ -29,7 +29,7 @@
   --safe-top:env(safe-area-inset-top,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden}
+html,body{height:100%;overflow:auto}
 body{
   margin:0;
   font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
@@ -42,6 +42,7 @@ body{
 }
 a{color:inherit;text-decoration:none}
 button{font:inherit}
+.main{overflow-y:auto;}
 .app{height:100svh;display:grid;grid-template-rows:auto 1fr auto;overflow:hidden}
 .topbar{padding:calc(34px + var(--safe-top)) 18px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .identity{display:flex;align-items:center;gap:11px;min-width:0}
@@ -73,6 +74,7 @@ button{font:inherit}
       <div class="logoMark">🐉</div>
       <div class="brand"><b>Universal Dragon Studio</b><span>Creator OS · Studio Brain V1</span></div>
     </div>
+    <button class="iconBtn" onclick="location.href='/login.html'" title="Login">👤</button>
     <button class="iconBtn" onclick="openSheet('settingsSheet')" title="Settings">⚙️</button>
   </header>
 
@@ -86,6 +88,23 @@ button{font:inherit}
       <a class="tool" href="/image-studio.html" data-name="image photo thumbnail editor"><div class="ico">🖼️</div><b>Image Studio</b><span>Thumbnails and promo images</span></a>
       <a class="tool" href="/ai-video.html" data-name="ai video prompt storyboard images plan"><div class="ico">🎬</div><b>AI Video Director</b><span>Prompt to scenes and plans</span></a>
       <a class="tool" href="/timeline-core.html" data-name="timeline video edit trim split capcut"><div class="ico">🎞️</div><b>Timeline Core</b><span>Visual trim and split editor</span></a>
+      <a class="tool" href="/video-editor.html" data-name="long video editor cut trim export">
+      <div class="ico">🎬</div>
+      <b>Video Editor Studio</b>
+      <span>Long video editing workspace</span>
+      </a>
+
+      <a class="tool" href="/shorts-ai.html" data-name="shorts ai clips generator">
+      <div class="ico">⚡</div>
+      <b>AI Shorts Generator</b>
+      <span>Create clips from long videos</span>
+      </a>
+
+      <a class="tool" href="/youtube-kit.html" data-name="youtube title description thumbnail">
+      <div class="ico">📺</div>
+      <b>YouTube Creator Kit</b>
+      <span>Creator publishing tools</span>
+      </a>
       <button class="tool" onclick="openSheet('mailSheet')" data-name="email gmail mail connect draft"><div class="ico">✉️</div><b>Mail Connect</b><span>Draft workflow later</span></button>
       <a class="tool" href="/ai-video.html#imageFiles" data-name="upload images to video order slideshow"><div class="ico">🧩</div><b>Images to Video</b><span>Upload images and build MP4</span></a>
       <a class="tool" href="/index.html" data-name="website app builder portfolio landing"><div class="ico">🌐</div><b>Website Builder</b><span>Public site and app plans</span></a>
@@ -118,6 +137,16 @@ button{font:inherit}
     <button class="quick" onclick="location.href='/image-studio.html'">🖼️ Image / Thumbnail<span>Edit image, add text, export PNG</span></button>
     <button class="quick" onclick="location.href='/ai-video.html'">🎬 AI Video Plan<span>Prompt to storyboard and image prompts</span></button>
     <button class="quick" onclick="location.href='/timeline-core.html'">🎞️ Timeline Edit<span>Visual trim, split, export MP4</span></button>
+
+    <button class="quick" onclick="location.href='/video-editor.html'">
+      🎬 Video Editor
+      <span>Long video timeline edit</span>
+    </button>
+
+    <button class="quick" onclick="location.href='/shorts-ai.html'">
+      ⚡ Shorts AI
+      <span>Auto short clips</span>
+    </button>
     <button class="quick" onclick="openSheet('mailSheet')">✉️ Mail Draft<span>Connect workflow later, no auto-send</span></button>
   </div>
 </section>
