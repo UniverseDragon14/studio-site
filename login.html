@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Login — Qbit Nova Video Studio</title>
+<meta name="theme-color" content="#080a10">
+<link rel="icon" href="/qbit-nova-icon-192.png" type="image/png">
+<style>
+:root{--bg:#080a10;--panel:#141a27;--line:#30394e;--text:#f8f9fd;--muted:#9da7ba;--pink:#ef2e98;--orange:#ff5b22;--cyan:#05d6ff}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 20% 0%,rgba(5,214,255,.14),transparent 32%),radial-gradient(circle at 90% 0%,rgba(239,46,152,.15),transparent 30%),var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}body{min-height:100dvh;display:grid;place-items:center;padding:18px}.card{width:min(440px,100%);border:1px solid var(--line);border-radius:24px;background:rgba(20,26,39,.96);padding:24px;box-shadow:0 28px 90px rgba(0,0,0,.45)}.logo{width:76px;height:76px;border-radius:22px;display:block;margin:auto;box-shadow:0 0 28px rgba(5,214,255,.25)}h1{text-align:center;font-size:25px;margin:16px 0 6px}p{text-align:center;color:var(--muted);line-height:1.5;font-size:13px;margin:0 0 20px}.btn{width:100%;min-height:52px;border-radius:15px;font-size:15px;font-weight:900}.google{border:1px solid var(--line);background:#fff;color:#151821}.primary{border:0;color:#fff;background:linear-gradient(135deg,var(--orange),var(--pink))}.secondary{border:1px solid var(--line);background:#20283a;color:#fff}.stack{display:grid;gap:10px}.profile{text-align:center}.avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--cyan)}.name{font-weight:900;font-size:18px;margin-top:10px}.email{color:var(--muted);font-size:12px;margin:4px 0 18px}.status{min-height:20px;text-align:center;color:var(--muted);font-size:11px;margin-top:13px}.hidden{display:none}
+</style>
+</head>
+<body>
+<main class="card">
+  <img class="logo" src="/qbit-nova-icon-192.png" alt="Qbit Nova">
+  <h1>Qbit Nova Login</h1>
+  <p>Sign in securely with Google. Gmail access will be connected separately later.</p>
+  <section id="signedOut" class="stack">
+    <button class="btn google" onclick="googleLogin()">Continue with Google</button>
+    <button class="btn secondary" onclick="location.href='/video-editor.html'">Back to Video Studio</button>
+  </section>
+  <section id="signedIn" class="profile hidden">
+    <img id="avatar" class="avatar" alt="">
+    <div id="name" class="name"></div>
+    <div id="email" class="email"></div>
+    <div class="stack">
+      <button class="btn primary" onclick="location.href='/video-editor.html'">Open Qbit Nova Studio</button>
+      <button class="btn secondary" onclick="logout()">Sign out</button>
+    </div>
+  </section>
+  <div id="status" class="status">Checking login…</div>
+</main>
+<script>
+const API="https://api-studio.universaldragon.com";
+function googleLogin(){location.href=`${API}/api/auth/google?returnTo=${encodeURIComponent(location.origin+"/login.html")}`}
+async function loadUser(){const status=document.getElementById("status");try{const response=await fetch(`${API}/api/auth/me`,{credentials:"include"});const data=await response.json();if(data.authenticated&&data.user){document.getElementById("signedOut").classList.add("hidden");document.getElementById("signedIn").classList.remove("hidden");document.getElementById("name").textContent=data.user.name||"Google User";document.getElementById("email").textContent=data.user.email||"";document.getElementById("avatar").src=data.user.picture||"/qbit-nova-icon-192.png";status.textContent="Google account connected"}else status.textContent="Not signed in"}catch{status.textContent="Login service unavailable"}}
+async function logout(){await fetch(`${API}/api/auth/logout`,{method:"POST",credentials:"include"});location.reload()}
+loadUser();
+</script>
+</body>
+</html>
