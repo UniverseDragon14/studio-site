@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Universal Dragon Studio | Image Studio V1</title>
+<title>Qbit Nova Photo Studio — Create & Edit</title>
 <style>
 :root{
   --bg:#050607;
@@ -96,23 +96,56 @@ a{color:var(--cyan)}
 }
 .stat b{display:block;color:var(--gold);font-size:18px;margin-bottom:4px}
 @media(max-width:850px){.workspace{grid-template-columns:1fr}.previewBox{position:static}.row{grid-template-columns:1fr}}
+
+body.embedded{height:100dvh;overflow:hidden}
+body.embedded header{display:none}
+body.embedded .wrap{
+  height:100dvh;max-width:none;padding:10px;overflow:hidden;
+  display:grid;grid-template-rows:auto minmax(0,1fr)
+}
+body.embedded .wrap>.card:first-child{margin-bottom:10px;padding:12px;border-radius:18px}
+body.embedded .wrap>.card:first-child h1{font-size:24px;margin:0}
+body.embedded .wrap>.card:first-child p{display:none}
+body.embedded .wrap>.card:first-child .links{margin-top:7px;font-size:11px}
+body.embedded .workspace{
+  min-height:0;height:100%;grid-template-columns:minmax(260px,340px) minmax(0,1fr);gap:10px
+}
+body.embedded .workspace>.card{min-height:0;margin:0;border-radius:18px;overflow:auto;padding:12px}
+body.embedded .previewBox{
+  position:static;overflow:hidden!important;display:grid;grid-template-rows:auto minmax(0,1fr)
+}
+body.embedded canvas{height:100%;max-height:none}
+.modeSwitch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.modeSwitch button{margin:0;padding:10px;background:#090d12;border:1px solid var(--line)}
+.modeSwitch button.active{background:linear-gradient(135deg,var(--fire),#b72cff);border-color:transparent}
+@media(max-width:850px){
+  body.embedded .workspace{grid-template-columns:1fr;grid-template-rows:minmax(250px,42%) minmax(0,1fr)}
+  body.embedded .workspace>.card:first-child{order:2}
+  body.embedded .previewBox{order:1}
+}
+
 </style>
 </head>
 <body>
 <header>
-  <div class="logo">UNIVERSAL DRAGON STUDIO · IMAGE STUDIO V1</div>
+  <div class="logo">QBIT NOVA · PHOTO STUDIO</div>
 </header>
 
 <div class="wrap">
   <section class="card">
-    <h1>Image <span>Create + Edit</span></h1>
+    <h1 id="modeHeading">Photo <span>Create + Edit</span></h1>
     <p>
       Upload one image, crop it for Shorts/YouTube/Square, add title text, and export a ready thumbnail or promo image.
       This V1 runs safely in the browser with canvas, so no API key or private upload is needed.
     </p>
+    <div class="modeSwitch">
+      <button id="createModeBtn" type="button" onclick="setPhotoMode('create')">🖼️ Create</button>
+      <button id="editModeBtn" type="button" onclick="setPhotoMode('edit')">✏️ Edit</button>
+    </div>
     <div class="links">
-      <a href="/ai-video.html">AI Video Director</a>
-      <a href="/video-core.html">Video Core</a>
+      <a href="/studio-app.html">Qbit Nova Home</a>
+      <a href="/ai-video.html">Video Create</a>
+      <a href="/video-editor.html">Video Edit</a>
     </div>
   </section>
 
@@ -187,6 +220,22 @@ a{color:var(--cyan)}
 </div>
 
 <script>
+
+const urlParams = new URLSearchParams(location.search);
+if (urlParams.get("embedded") === "1") document.body.classList.add("embedded");
+
+function setPhotoMode(mode){
+  const create = mode === "create";
+  document.getElementById("createModeBtn")?.classList.toggle("active", create);
+  document.getElementById("editModeBtn")?.classList.toggle("active", !create);
+  const heading = document.getElementById("modeHeading");
+  if(heading) heading.innerHTML = create ? 'Photo <span>Create</span>' : 'Photo <span>Edit</span>';
+  history.replaceState(null,"",location.pathname+location.search+(create?"#create":"#edit"));
+}
+
+const initialPhotoMode = location.hash === "#edit" ? "edit" : "create";
+window.addEventListener("DOMContentLoaded",()=>setPhotoMode(initialPhotoMode));
+
 const imageInput = document.getElementById("imageInput");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");

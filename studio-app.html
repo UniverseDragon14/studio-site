@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Universal Dragon Studio App</title>
+<title>Qbit Nova Studio — Create, Edit & AI</title>
 <meta name="description" content="Universal Dragon Studio app shell for image, video, AI creator tools, mail connection, and settings." />
 <meta name="theme-color" content="#ff5a1f" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-title" content="UD Studio" />
+<meta name="apple-mobile-web-app-title" content="Qbit Nova" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="manifest" href="/manifest.webmanifest" />
-<link rel="icon" href="/ud-icon.svg" type="image/svg+xml" />
-<link rel="apple-touch-icon" href="/ud-icon.svg" />
+<link rel="icon" href="/qbit-nova-icon-192.png" type="image/png" />
+<link rel="apple-touch-icon" href="/qbit-nova-icon-192.png" />
 <style>
 :root{
   --bg:#06070b;
@@ -46,7 +46,7 @@ button{font:inherit}
 .app{height:100svh;display:grid;grid-template-rows:auto 1fr auto;overflow:hidden}
 .topbar{padding:calc(34px + var(--safe-top)) 18px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .identity{display:flex;align-items:center;gap:11px;min-width:0}
-.logoMark{width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,var(--fire),var(--pink));display:grid;place-items:center;box-shadow:0 0 28px rgba(255,90,31,.32);font-size:23px;flex:0 0 auto}
+.logoMark{width:44px;height:44px;border-radius:16px;overflow:hidden;box-shadow:0 0 28px rgba(0,217,255,.28);flex:0 0 auto;border:1px solid rgba(255,255,255,.12)}.logoMark img{width:100%;height:100%;display:block;object-fit:cover}
 .brand{min-width:0}.brand b{display:block;font-size:15px;letter-spacing:.09em;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}.brand span{font-size:12px;color:var(--muted);font-weight:700}
 .iconBtn{width:44px;height:44px;border:1px solid var(--line);border-radius:16px;background:rgba(17,20,29,.86);color:var(--text);display:grid;place-items:center;font-size:20px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
 .main{min-height:0;padding:0 16px 8px;display:grid;grid-template-rows:auto auto 1fr;gap:12px;overflow:hidden}
@@ -65,14 +65,37 @@ button{font:inherit}
 @media(max-width:760px){.topbar{padding:calc(32px + var(--safe-top)) 16px 9px}.main{padding:0 14px 8px;gap:10px}.tools{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.tool{min-height:104px;border-radius:22px;padding:9px 7px}.tool .ico{width:48px;height:48px;border-radius:18px;font-size:24px}.tool b{font-size:13.5px}.tool span{font-size:10.5px}.hero{padding:15px;border-radius:24px}.hero p{font-size:13px}.brand b{font-size:14px}.flowSteps{grid-template-columns:repeat(2,minmax(0,1fr))}.todayFlow{padding:12px;border-radius:22px}.flowHead{align-items:flex-start;flex-direction:column;gap:3px}}
 @media(max-height:770px){.hero p{display:none}.hero{padding:14px 16px}.tool{min-height:92px}.tool span{display:none}.searchWrap input{height:48px}.bottomNav{padding-top:6px}.createBtn .plus{width:58px;height:58px}}
 @media(max-height:760px){.todayFlow{display:none}}
+
+.moduleView{
+  position:fixed;inset:0;z-index:80;display:grid;
+  grid-template-rows:auto minmax(0,1fr);background:#06070b;
+  transform:translateX(105%);opacity:0;pointer-events:none;transition:.22s ease;
+}
+.moduleView.open{transform:translateX(0);opacity:1;pointer-events:auto}
+.moduleBar{
+  min-height:64px;padding:calc(8px + var(--safe-top)) 12px 8px;
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;gap:10px;border-bottom:1px solid var(--line);
+  background:rgba(6,7,11,.97);backdrop-filter:blur(16px);
+}
+.moduleBack,.moduleOpen{
+  width:42px;height:42px;border:1px solid var(--line);border-radius:14px;
+  background:var(--card2);color:var(--text);font-size:20px;cursor:pointer;
+}
+.moduleTitle{min-width:0}
+.moduleTitle b{display:block;color:var(--gold);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.moduleTitle span{display:block;color:var(--muted);font-size:10px;font-weight:750}
+.moduleFrame{width:100%;height:100%;border:0;background:#06070b}
+body.module-open{overflow:hidden}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
     <div class="identity">
-      <div class="logoMark">🐉</div>
-      <div class="brand"><b>Universal Dragon Studio</b><span>Creator OS · Studio Brain V1</span></div>
+      <div class="logoMark"><img src="/qbit-nova-icon-192.png" alt="Qbit Nova"></div>
+      <div class="brand"><b>Qbit Nova Studio</b><span>Photo · Video · AI · One App</span></div>
     </div>
     <button class="iconBtn" onclick="location.href='/login.html'" title="Login">👤</button>
     <button class="iconBtn" onclick="openSheet('settingsSheet')" title="Settings">⚙️</button>
@@ -85,14 +108,19 @@ button{font:inherit}
     </section>
     <div class="searchWrap"><span>⌕</span><input id="search" placeholder="Search tools: image, video, timeline, mail..." oninput="filterTools()" /></div>
     <section class="tools" id="tools">
-      <a class="tool" href="/image-studio.html" data-name="image photo thumbnail editor"><div class="ico">🖼️</div><b>Image Studio</b><span>Thumbnails and promo images</span></a>
-      <a class="tool" href="/ai-video.html" data-name="ai video prompt storyboard images plan"><div class="ico">🎬</div><b>AI Video Director</b><span>Prompt to scenes and plans</span></a>
-      <a class="tool" href="/timeline-core.html" data-name="timeline video edit trim split capcut"><div class="ico">🎞️</div><b>Timeline Core</b><span>Visual trim and split editor</span></a>
-      <a class="tool" href="/video-editor.html" data-name="long video editor cut trim export">
-      <div class="ico">🎬</div>
-      <b>Video Editor Studio</b>
-      <span>Long video editing workspace</span>
-      </a>
+      <button class="tool" onclick="openModule('/image-studio.html?embedded=1#create','Photo Create')" data-name="photo image create design thumbnail">
+        <div class="ico">🖼️</div><b>Photo Create</b><span>Create thumbnails and posts</span>
+      </button>
+      <button class="tool" onclick="openModule('/image-studio.html?embedded=1#edit','Photo Edit')" data-name="photo image edit crop text brightness contrast">
+        <div class="ico">✏️</div><b>Photo Edit</b><span>Crop, text and adjustments</span>
+      </button>
+      <button class="tool" onclick="openModule('/ai-video.html?embedded=1','Video Create')" data-name="ai video create prompt storyboard images plan"><div class="ico">🎬</div><b>Video Create</b><span>Prompt to scenes and plans</span></button>
+      <button class="tool" onclick="openModule('/timeline-core.html?embedded=1','Timeline Core')" data-name="timeline video edit trim split"><div class="ico">🎞️</div><b>Timeline Core</b><span>Visual trim and split editor</span></button>
+      <button class="tool" onclick="openModule('/video-editor.html?embedded=1','Video Edit')" data-name="long video editor cut trim export">
+      <div class="ico">✂️</div>
+      <b>Video Edit</b>
+      <span>Qbit Nova timeline workspace</span>
+      </button>
 
       <a class="tool" href="/shorts-ai.html" data-name="shorts ai clips generator">
       <div class="ico">⚡</div>
@@ -106,16 +134,16 @@ button{font:inherit}
       <span>Creator publishing tools</span>
       </a>
       <button class="tool" onclick="openSheet('mailSheet')" data-name="email gmail mail connect draft"><div class="ico">✉️</div><b>Mail Connect</b><span>Draft workflow later</span></button>
-      <a class="tool" href="/ai-video.html#imageFiles" data-name="upload images to video order slideshow"><div class="ico">🧩</div><b>Images to Video</b><span>Upload images and build MP4</span></a>
+      <button class="tool" onclick="openModule('/ai-video.html?embedded=1#imageFiles','Images to Video')" data-name="upload images to video order slideshow"><div class="ico">🧩</div><b>Images to Video</b><span>Upload images and build MP4</span></button>
       <a class="tool" href="/index.html" data-name="website app builder portfolio landing"><div class="ico">🌐</div><b>Website Builder</b><span>Public site and app plans</span></a>
       <button class="tool" onclick="openSheet('projectsSheet')" data-name="projects files recent saved"><div class="ico">📁</div><b>Projects</b><span>Local shortcuts</span></button>
       <button class="tool" onclick="openSheet('settingsSheet')" data-name="settings profile safety account"><div class="ico">⚙️</div><b>Settings</b><span>Profile and safety</span></button>
       <div class="todayFlow">
         <div class="flowHead"><b>Today’s Workflow</b><span>simple • safe • approval-first</span></div>
         <div class="flowSteps">
-          <button class="flowStep" onclick="location.href='/image-studio.html'"><strong>01</strong><span>Create image</span><small>thumbnail / promo</small></button>
-          <button class="flowStep" onclick="location.href='/ai-video.html'"><strong>02</strong><span>Plan video</span><small>scenes / prompts</small></button>
-          <button class="flowStep" onclick="location.href='/timeline-core.html'"><strong>03</strong><span>Timeline edit</span><small>visual trim / split</small></button>
+          <button class="flowStep" onclick="openModule('/image-studio.html?embedded=1#create','Photo Create')"><strong>01</strong><span>Create image</span><small>thumbnail / promo</small></button>
+          <button class="flowStep" onclick="openModule('/ai-video.html?embedded=1','Video Create')"><strong>02</strong><span>Plan video</span><small>scenes / prompts</small></button>
+          <button class="flowStep" onclick="openModule('/timeline-core.html?embedded=1','Timeline Core')"><strong>03</strong><span>Timeline edit</span><small>visual trim / split</small></button>
           <button class="flowStep" onclick="openSheet('projectsSheet')"><strong>04</strong><span>Save project</span><small>recent work</small></button>
         </div>
       </div>
@@ -123,22 +151,36 @@ button{font:inherit}
   </main>
 
   <nav class="bottomNav">
-    <button class="navItem active" onclick="closeSheets()"><span class="navIcon">🏠</span>Home</button>
-    <button class="navItem" onclick="openSheet('projectsSheet')"><span class="navIcon">📁</span>Projects</button>
+    <button class="navItem active" onclick="showHome()"><span class="navIcon">🏠</span>Home</button>
+    <button class="navItem" onclick="openModule('/image-studio.html?embedded=1#create','Photo Studio')"><span class="navIcon">🖼️</span>Photo</button>
     <div class="createBtn"><button class="plus" onclick="openSheet('createSheet')">+</button></div>
-    <button class="navItem" onclick="openSheet('mailSheet')"><span class="navIcon">✉️</span>Mail</button>
-    <button class="navItem" onclick="openSheet('settingsSheet')"><span class="navIcon">⚙️</span>Settings</button>
+    <button class="navItem" onclick="openModule('/video-editor.html?embedded=1#chat','Nova AI')"><span class="navIcon">✨</span>Nova</button>
+    <button class="navItem" onclick="openSheet('projectsSheet')"><span class="navIcon">📁</span>Projects</button>
   </nav>
 </div>
+
+
+<section class="moduleView" id="moduleView" aria-hidden="true">
+  <div class="moduleBar">
+    <button class="moduleBack" onclick="closeModule()" aria-label="Back">←</button>
+    <div class="moduleTitle">
+      <b id="moduleTitle">Qbit Nova Module</b>
+      <span>One app · shared account · shared projects</span>
+    </div>
+    <button class="moduleOpen" onclick="openModuleExternal()" aria-label="Open separately">↗</button>
+  </div>
+  <iframe class="moduleFrame" id="moduleFrame" title="Qbit Nova module"></iframe>
+</section>
 
 <section class="sheet" id="createSheet">
   <div class="sheetHead"><b>Create new</b><button class="iconBtn" onclick="closeSheets()">×</button></div>
   <div class="grid2">
-    <button class="quick" onclick="location.href='/image-studio.html'">🖼️ Image / Thumbnail<span>Edit image, add text, export PNG</span></button>
-    <button class="quick" onclick="location.href='/ai-video.html'">🎬 AI Video Plan<span>Prompt to storyboard and image prompts</span></button>
-    <button class="quick" onclick="location.href='/timeline-core.html'">🎞️ Timeline Edit<span>Visual trim, split, export MP4</span></button>
+    <button class="quick" onclick="openModule('/image-studio.html?embedded=1#create','Photo Create')">🖼️ Photo Create<span>Thumbnail, post and promo design</span></button>
+    <button class="quick" onclick="openModule('/image-studio.html?embedded=1#edit','Photo Edit')">✏️ Photo Edit<span>Crop, text, brightness and contrast</span></button>
+    <button class="quick" onclick="openModule('/ai-video.html?embedded=1','Video Create')">🎬 AI Video Plan<span>Prompt to storyboard and image prompts</span></button>
+    <button class="quick" onclick="openModule('/timeline-core.html?embedded=1','Timeline Core')">🎞️ Timeline Edit<span>Visual trim, split, export MP4</span></button>
 
-    <button class="quick" onclick="location.href='/video-editor.html'">
+    <button class="quick" onclick="openModule('/video-editor.html?embedded=1','Video Edit')">
       🎬 Video Editor
       <span>Long video timeline edit</span>
     </button>
@@ -179,6 +221,45 @@ button{font:inherit}
 </section>
 
 <script>
+let currentModuleUrl = "";
+
+function openModule(url, title){
+  closeSheets();
+  currentModuleUrl = url;
+  document.getElementById("moduleTitle").textContent = title || "Qbit Nova Module";
+  document.getElementById("moduleFrame").src = url;
+  document.getElementById("moduleView").classList.add("open");
+  document.getElementById("moduleView").setAttribute("aria-hidden","false");
+  document.body.classList.add("module-open");
+  saveRecentProject({
+    title:title || "Qbit Nova Module",
+    url:url,
+    type:"module",
+    note:"Opened inside Qbit Nova Studio"
+  });
+}
+
+function closeModule(){
+  const view = document.getElementById("moduleView");
+  view.classList.remove("open");
+  view.setAttribute("aria-hidden","true");
+  document.body.classList.remove("module-open");
+  setTimeout(()=>{document.getElementById("moduleFrame").src="about:blank"},220);
+  currentModuleUrl = "";
+}
+
+function openModuleExternal(){
+  if(currentModuleUrl) window.open(currentModuleUrl.replace("?embedded=1",""), "_blank", "noopener");
+}
+
+function showHome(){
+  closeModule();
+  closeSheets();
+}
+
+window.addEventListener("message", event=>{
+  if(event.data && event.data.type === "qbit-close-module") closeModule();
+});
 function openSheet(id){closeSheets();document.getElementById(id).classList.add('open')}
 function closeSheets(){document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('open'))}
 function filterTools(){const q=document.getElementById('search').value.toLowerCase().trim();document.querySelectorAll('.tool').forEach(card=>{const hay=(card.dataset.name||'')+' '+card.textContent.toLowerCase();card.style.display=hay.includes(q)?'':'none'})}
@@ -191,7 +272,14 @@ window.saveSettings=udFinalSaveProfile;window.saveMail=udFinalSaveProfile;window
 async function loadRecentProjects(){try{const res=await fetch('/api/studio/projects');const data=await res.json();renderRecentProjects(data.projects||[])}catch(e){}}
 function renderRecentProjects(projects){const box=document.getElementById('recentProjectsBox');if(!box)return;box.innerHTML=projects.slice(0,4).map(p=>`<button class="quick" onclick="openProject('${String(p.url||'/').replace(/'/g,'')}')"><span class="projectBadge">${p.type||'project'}</span>${p.title||'Untitled'}<span>${p.note||'Recent Studio work'}</span></button>`).join('')}
 async function saveRecentProject(project){try{await fetch('/api/studio/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(project)})}catch(e){}}
-function openProject(url){location.href=url||'/'}
+function openProject(url){
+  const target=url||'/';
+  if(target.startsWith('/')){
+    openModule(target.includes('?')?target:target+'?embedded=1','Recent Project');
+  }else{
+    location.href=target;
+  }
+}
 document.addEventListener('click',(e)=>{const card=e.target.closest('.tool');if(!card)return;const href=card.getAttribute('href');const title=card.querySelector('b')?.textContent?.trim();const note=card.querySelector('span:last-child')?.textContent?.trim();if(href&&title){saveRecentProject({title,url:href,type:'tool',note:note||'Opened from Studio Home'})}});
 window.addEventListener('load',loadRecentProjects);
 </script>
