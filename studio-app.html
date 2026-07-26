@@ -88,6 +88,227 @@ button{font:inherit}
 .moduleFrame{width:100%;height:100%;border:0;background:#06070b}
 body.module-open{overflow:hidden}
 
+
+/* QBIT_NOVA_MOBILE_UI_V2 */
+@media (pointer:coarse) and (max-width:1100px){
+  html,body{
+    min-height:100%;
+    height:auto;
+    overflow-x:hidden;
+    overflow-y:auto;
+  }
+
+  body{
+    background-attachment:fixed;
+  }
+
+  .app{
+    display:block;
+    width:100%;
+    min-height:100svh;
+    height:auto;
+    overflow:visible;
+    padding-bottom:calc(88px + var(--safe-bottom));
+  }
+
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    min-height:76px;
+    padding:calc(12px + var(--safe-top)) 14px 10px;
+    background:rgba(6,7,11,.92);
+    backdrop-filter:blur(18px);
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+
+  .identity{gap:10px}
+  .logoMark{
+    width:52px;
+    height:52px;
+    border-radius:17px;
+  }
+
+  .brand b{
+    font-size:16px;
+    letter-spacing:.06em;
+  }
+
+  .brand span{
+    font-size:12px;
+  }
+
+  .iconBtn{
+    width:48px;
+    height:48px;
+    border-radius:16px;
+    font-size:21px;
+    flex:0 0 auto;
+  }
+
+  .main{
+    display:block;
+    min-height:0;
+    overflow:visible;
+    padding:12px 12px 24px;
+  }
+
+  .hero{
+    padding:18px;
+    margin-bottom:12px;
+    border-radius:24px;
+  }
+
+  .hero h1{
+    font-size:clamp(34px,9vw,48px);
+    line-height:1;
+    letter-spacing:-1.1px;
+  }
+
+  .hero p{
+    display:block;
+    margin-top:10px;
+    font-size:13px;
+    line-height:1.45;
+  }
+
+  .searchWrap{
+    margin-bottom:12px;
+  }
+
+  .searchWrap input{
+    height:56px;
+    border-radius:19px;
+    font-size:15px;
+    padding-left:46px;
+  }
+
+  .searchWrap span{
+    top:16px;
+  }
+
+  .tools{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:11px;
+    overflow:visible;
+    align-content:start;
+  }
+
+  .tool,.tool:visited{
+    width:100%;
+    min-height:126px;
+    padding:13px 9px;
+    border-radius:22px;
+    gap:8px;
+  }
+
+  .tool .ico{
+    width:54px;
+    height:54px;
+    border-radius:18px;
+    font-size:27px;
+  }
+
+  .tool b{
+    font-size:15px;
+    line-height:1.12;
+  }
+
+  .tool span{
+    display:block;
+    font-size:11px;
+    line-height:1.25;
+    -webkit-line-clamp:2;
+  }
+
+  .todayFlow{
+    margin-top:12px;
+    padding:13px;
+    border-radius:22px;
+  }
+
+  .flowHead{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+
+  .flowHead b{font-size:16px}
+  .flowHead span{font-size:10px}
+
+  .flowSteps{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px;
+  }
+
+  .flowStep{
+    min-height:84px;
+    padding:11px;
+  }
+
+  .flowStep span{font-size:13px}
+  .flowStep small{font-size:10px}
+
+  .bottomNav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:40;
+    min-height:74px;
+    padding:8px 9px calc(9px + var(--safe-bottom));
+    gap:2px;
+    background:rgba(6,7,11,.94);
+    backdrop-filter:blur(20px);
+  }
+
+  .navItem{
+    min-width:0;
+    font-size:11px;
+    gap:2px;
+  }
+
+  .navItem .navIcon{
+    font-size:23px;
+  }
+
+  .createBtn{
+    transform:translateY(-15px);
+  }
+
+  .createBtn .plus{
+    width:64px;
+    height:64px;
+    border-radius:22px;
+    font-size:34px;
+  }
+
+  .sheet{
+    left:10px;
+    right:10px;
+    bottom:calc(80px + var(--safe-bottom));
+    max-height:72dvh;
+    overflow-y:auto;
+    border-radius:24px;
+  }
+}
+
+@media (pointer:coarse) and (max-width:430px){
+  .topbar{padding-left:10px;padding-right:10px}
+  .brand b{font-size:14px}
+  .brand span{font-size:10px}
+  .logoMark{width:48px;height:48px}
+  .iconBtn{width:44px;height:44px}
+  .hero h1{font-size:32px}
+  .tool,.tool:visited{min-height:118px}
+  .tool b{font-size:14px}
+}
+
+/* Keep desktop/tablet layout unchanged. */
+
 </style>
 </head>
 <body>
