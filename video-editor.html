@@ -287,7 +287,7 @@ async function sendChat(){
   }catch(error){addMessage("ai",`Connection failed: ${error.message}\n\nCheck the Cloudflare API hostname and Pi5 backend.`);status.textContent="Connection unavailable"}
 }
 function projectContext(){return{app:"Qbit Nova Video Studio",file:state.current?{name:state.current.name,type:state.current.type,size:state.current.size}:null,duration:state.duration,currentTime:Number(video.currentTime||0),splits:state.splits,aspect:state.aspect,platform:state.platform,caption:document.getElementById("captionPreview").textContent,export:{format:document.getElementById("format").value,quality:document.getElementById("quality").value,fps:document.getElementById("fps").value}}}
-function getApiEndpoint(){return localStorage.getItem("qbitNovaAiEndpoint")||""}
+function getApiEndpoint(){return localStorage.getItem("qbitNovaAiEndpoint")||"https://api-studio.universaldragon.com/api/ai/chat"}
 function openSettings(){document.getElementById("apiEndpoint").value=getApiEndpoint();document.getElementById("settingsModal").classList.add("open")}
 function closeSettings(){document.getElementById("settingsModal").classList.remove("open")}
 function closeSettingsBackdrop(event){if(event.target.id==="settingsModal")closeSettings()}
