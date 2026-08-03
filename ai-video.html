@@ -182,6 +182,16 @@ a{color:var(--cyan)}
 </div>
 
 <script>
+
+const STUDIO_API_ORIGIN =
+  location.hostname === "studio.universaldragon.com"
+    ? "https://api-studio.universaldragon.com"
+    : "";
+
+function apiUrl(path) {
+  return `${STUDIO_API_ORIGIN}${path}`;
+}
+
 const result = document.getElementById("result");
 
 async function generateStoryboard(){
@@ -196,7 +206,7 @@ async function generateStoryboard(){
 
   result.textContent = "Generating storyboard + image prompts with Studio Brain...";
 
-  const res = await fetch("/api/ai/storyboard", {
+  const res = await fetch(apiUrl("/api/ai/storyboard"), {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({ prompt, scenes, aspect })
@@ -219,7 +229,7 @@ async function uploadImages(){
   const form = new FormData();
   for(const f of files) form.append("images", f);
 
-  const res = await fetch("/api/images/upload", {
+  const res = await fetch(apiUrl("/api/images/upload"), {
     method:"POST",
     body:form
   });
@@ -276,7 +286,7 @@ async function createImageVideo(){
 
   result.textContent = "Creating MP4 video from images with FFmpeg...";
 
-  const res = await fetch("/api/images/render-video", {
+  const res = await fetch(apiUrl("/api/images/render-video"), {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({ files: uploadedImageFiles, seconds, aspect })

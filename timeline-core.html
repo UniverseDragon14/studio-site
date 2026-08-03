@@ -154,6 +154,16 @@ a{color:var(--cyan);text-decoration:none}button,input,select{font:inherit}button
 </div>
 
 <script>
+
+const STUDIO_API_ORIGIN =
+  location.hostname === "studio.universaldragon.com"
+    ? "https://api-studio.universaldragon.com"
+    : "";
+
+function apiUrl(path) {
+  return `${STUDIO_API_ORIGIN}${path}`;
+}
+
 const player = document.getElementById('player');
 const fileInput = document.getElementById('videoFile');
 const startRange = document.getElementById('startRange');
@@ -205,7 +215,7 @@ async function uploadVideo(){
   if(!f){ show('Choose a video first.'); return; }
   show('Uploading video to Pi5 timeline...'); links.innerHTML='';
   const fd = new FormData(); fd.append('video', f);
-  const res = await fetch('/api/video/upload', { method:'POST', body:fd });
+  const res = await fetch(apiUrl('/api/video/upload'), { method:'POST', body:fd });
   const data = await res.json();
   if(!res.ok){ show(data); return; }
   uploadedFile = data.file;
@@ -235,7 +245,7 @@ async function exportSelection(){
   const payload = { file: uploadedFile, start: fmt(startSec()), duration: fmt(selectedDuration()) };
   links.innerHTML='';
   show('Exporting selected MP4 with FFmpeg...');
-  const res = await fetch('/api/video/trim', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+  const res = await fetch(apiUrl('/api/video/trim'), { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
   const data = await res.json();
   show(data);
   if(data.url){
@@ -251,9 +261,9 @@ async function splitClip(){
   show('Splitting into 2 clips with existing trim endpoint...'); links.innerHTML='';
   const first = { file: uploadedFile, start:'00:00:00', duration:fmt(split) };
   const second = { file: uploadedFile, start:fmt(split), duration:fmt(duration-split) };
-  const r1 = await fetch('/api/video/trim', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(first) });
+  const r1 = await fetch(apiUrl('/api/video/trim'), { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(first) });
   const d1 = await r1.json();
-  const r2 = await fetch('/api/video/trim', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(second) });
+  const r2 = await fetch(apiUrl('/api/video/trim'), { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(second) });
   const d2 = await r2.json();
   show({ status:'split_done', split_at:fmt(split), part_1:d1, part_2:d2 });
   if(d1.url) addLink('Open Part 1', d1.url);
@@ -329,7 +339,7 @@ async function exportTextOverlay(){
 
   links.innerHTML='';
   show('Burning text overlay into selected video with FFmpeg...');
-  const res = await fetch('/api/video/text-overlay', {
+  const res = await fetch(apiUrl('/api/video/text-overlay'), {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify(payload)
@@ -347,7 +357,7 @@ async function exportTextOverlay(){
 }
 
 function addLink(label,url){ const a=document.createElement('a'); a.className='exportLink'; a.href=url; a.target='_blank'; a.textContent=label; links.appendChild(a); }
-async function saveRecent(title,url,type,note){ try{ await fetch('/api/studio/projects',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({title,url,type,note}) }); }catch(e){} }
+async function saveRecent(title,url,type,note){ try{ await fetch(apiUrl('/api/studio/projects'),{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({title,url,type,note}) }); }catch(e){} }
 updateUI();
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>null); }
 </script>

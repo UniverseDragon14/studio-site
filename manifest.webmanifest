@@ -8,7 +8,12 @@
   "orientation": "portrait",
   "background_color": "#06070b",
   "theme_color": "#ff5a1f",
-  "categories": ["productivity", "photo", "video", "utilities"],
+  "categories": [
+    "productivity",
+    "photo",
+    "video",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "/ud-icon.svg",

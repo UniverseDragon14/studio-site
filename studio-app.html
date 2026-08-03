@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Qbit Nova Studio — Create, Edit & AI</title>
+<title>Universal Dragon Studio — Create, Edit & AI</title>
 <meta name="description" content="Universal Dragon Studio app shell for image, video, AI creator tools, mail connection, and settings." />
 <meta name="theme-color" content="#ff5a1f" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-title" content="Qbit Nova" />
+<meta name="apple-mobile-web-app-title" content="Universal Dragon Studio" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="manifest" href="/manifest.webmanifest" />
 <link rel="icon" href="/qbit-nova-icon-192.png" type="image/png" />
@@ -309,16 +309,133 @@ body.module-open{overflow:hidden}
 
 /* Keep desktop/tablet layout unchanged. */
 
+
+/* === UNIVERSAL DRAGON ACCOUNT UI === */
+.accountBtn{
+  width:44px;
+  height:44px;
+  padding:0;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(17,20,29,.86);
+  color:var(--text);
+  display:grid;
+  place-items:center;
+  font-size:20px;
+  cursor:pointer;
+  overflow:hidden;
+}
+
+.accountAvatar{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  border-radius:15px;
+}
+
+.accountIdentity{
+  display:grid;
+  grid-template-columns:56px minmax(0,1fr);
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#090d12;
+}
+
+.accountSheetAvatar{
+  width:56px;
+  height:56px;
+  border-radius:18px;
+  object-fit:cover;
+  border:1px solid rgba(0,217,255,.35);
+}
+
+.accountName{
+  font-size:16px;
+  font-weight:950;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.accountEmail{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.authButton{
+  width:100%;
+  min-height:48px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#f8f9fd;
+  color:#111722;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.authButton.secondary{
+  background:#101621;
+  color:var(--text);
+}
+
+.authButton:disabled{
+  opacity:.48;
+  cursor:not-allowed;
+}
+
+.toolUnavailable{
+  opacity:.52;
+  cursor:not-allowed;
+}
+
+.toolUnavailable::after{
+  content:"Coming soon";
+  display:block;
+  margin-top:5px;
+  color:var(--gold);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+
+[hidden]{
+  display:none !important;
+}
+/* === END UNIVERSAL DRAGON ACCOUNT UI === */
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
     <div class="identity">
-      <div class="logoMark"><img src="/qbit-nova-icon-192.png" alt="Qbit Nova"></div>
-      <div class="brand"><b>Qbit Nova Studio</b><span>Photo · Video · AI · One App</span></div>
+      <div class="logoMark"><img src="/qbit-nova-icon-192.png" alt="Universal Dragon Studio"></div>
+      <div class="brand"><b>Universal Dragon Studio</b><span>Image · Video · Agent · Research</span></div>
     </div>
-    <button class="iconBtn" onclick="location.href='/login.html'" title="Login">👤</button>
+    <button
+      class="accountBtn"
+      id="accountButton"
+      onclick="openAccount()"
+      title="Account"
+      aria-label="Open account"
+    >
+      <span id="accountGuestIcon">👤</span>
+      <img
+        id="accountAvatar"
+        class="accountAvatar"
+        alt="Account avatar"
+        hidden
+      >
+    </button>
     <button class="iconBtn" onclick="openSheet('settingsSheet')" title="Settings">⚙️</button>
   </header>
 
@@ -340,20 +457,30 @@ body.module-open{overflow:hidden}
       <button class="tool" onclick="openModule('/video-editor.html?embedded=1','Video Edit')" data-name="long video editor cut trim export">
       <div class="ico">✂️</div>
       <b>Video Edit</b>
-      <span>Qbit Nova timeline workspace</span>
+      <span>Universal Dragon timeline workspace</span>
       </button>
 
-      <a class="tool" href="/shorts-ai.html" data-name="shorts ai clips generator">
-      <div class="ico">⚡</div>
-      <b>AI Shorts Generator</b>
-      <span>Create clips from long videos</span>
-      </a>
+      <button
+        class="tool toolUnavailable"
+        type="button"
+        disabled
+        data-name="shorts ai clips generator coming soon"
+      >
+        <div class="ico">⚡</div>
+        <b>AI Shorts Generator</b>
+        <span>Create clips from long videos</span>
+      </button>
 
-      <a class="tool" href="/youtube-kit.html" data-name="youtube title description thumbnail">
-      <div class="ico">📺</div>
-      <b>YouTube Creator Kit</b>
-      <span>Creator publishing tools</span>
-      </a>
+      <button
+        class="tool toolUnavailable"
+        type="button"
+        disabled
+        data-name="youtube title description thumbnail coming soon"
+      >
+        <div class="ico">📺</div>
+        <b>YouTube Creator Kit</b>
+        <span>Creator publishing tools</span>
+      </button>
       <button class="tool" onclick="openSheet('mailSheet')" data-name="email gmail mail connect draft"><div class="ico">✉️</div><b>Mail Connect</b><span>Draft workflow later</span></button>
       <button class="tool" onclick="openModule('/ai-video.html?embedded=1#imageFiles','Images to Video')" data-name="upload images to video order slideshow"><div class="ico">🧩</div><b>Images to Video</b><span>Upload images and build MP4</span></button>
       <a class="tool" href="/index.html" data-name="website app builder portfolio landing"><div class="ico">🌐</div><b>Website Builder</b><span>Public site and app plans</span></a>
@@ -371,12 +498,26 @@ body.module-open{overflow:hidden}
     </section>
   </main>
 
-  <nav class="bottomNav">
-    <button class="navItem active" onclick="showHome()"><span class="navIcon">🏠</span>Home</button>
-    <button class="navItem" onclick="openModule('/image-studio.html?embedded=1#create','Photo Studio')"><span class="navIcon">🖼️</span>Photo</button>
-    <div class="createBtn"><button class="plus" onclick="openSheet('createSheet')">+</button></div>
-    <button class="navItem" onclick="openModule('/video-editor.html?embedded=1#chat','Nova AI')"><span class="navIcon">✨</span>Nova</button>
-    <button class="navItem" onclick="openSheet('projectsSheet')"><span class="navIcon">📁</span>Projects</button>
+  <nav class="bottomNav" aria-label="Studio navigation">
+    <button class="navItem active" onclick="showHome()">
+      <span class="navIcon">🏠</span>Home
+    </button>
+
+    <button class="navItem" onclick="openSheet('createSheet')">
+      <span class="navIcon">＋</span>Create
+    </button>
+
+    <button class="navItem" onclick="openSheet('projectsSheet')">
+      <span class="navIcon">📁</span>Projects
+    </button>
+
+    <button class="navItem" onclick="openModule('/video-editor.html?embedded=1#chat','Nova AI')">
+      <span class="navIcon">✨</span>Nova
+    </button>
+
+    <button class="navItem" onclick="openAccount()">
+      <span class="navIcon">👤</span>Profile
+    </button>
   </nav>
 </div>
 
@@ -385,12 +526,12 @@ body.module-open{overflow:hidden}
   <div class="moduleBar">
     <button class="moduleBack" onclick="closeModule()" aria-label="Back">←</button>
     <div class="moduleTitle">
-      <b id="moduleTitle">Qbit Nova Module</b>
+      <b id="moduleTitle">Universal Dragon Studio Module</b>
       <span>One app · shared account · shared projects</span>
     </div>
     <button class="moduleOpen" onclick="openModuleExternal()" aria-label="Open separately">↗</button>
   </div>
-  <iframe class="moduleFrame" id="moduleFrame" title="Qbit Nova module"></iframe>
+  <iframe class="moduleFrame" id="moduleFrame" title="Universal Dragon Studio module"></iframe>
 </section>
 
 <section class="sheet" id="createSheet">
@@ -425,6 +566,56 @@ body.module-open{overflow:hidden}
   </div>
 </section>
 
+<section class="sheet" id="accountSheet">
+  <div class="sheetHead">
+    <b>Account</b>
+    <button class="iconBtn" onclick="closeSheets()">×</button>
+  </div>
+
+  <div id="accountSignedOut" class="profileBox">
+    <div class="statusLine">
+      Sign in to keep your Studio identity and future projects together.
+    </div>
+
+    <button class="authButton" onclick="startGoogleLogin()">
+      Continue with Google / Gmail
+    </button>
+
+    <button
+      class="authButton secondary"
+      type="button"
+      disabled
+      title="GitHub OAuth will be added in the next step"
+    >
+      Continue with GitHub · setup next
+    </button>
+  </div>
+
+  <div id="accountSignedIn" class="profileBox" hidden>
+    <div class="accountIdentity">
+      <img
+        id="accountSheetAvatar"
+        class="accountSheetAvatar"
+        src="/qbit-nova-icon-192.png"
+        alt="Signed-in account"
+      >
+
+      <div>
+        <div id="accountName" class="accountName">Google User</div>
+        <div id="accountEmail" class="accountEmail"></div>
+      </div>
+    </div>
+
+    <div id="accountProvider" class="statusLine">
+      Google account connected
+    </div>
+
+    <button class="authButton secondary" onclick="studioLogout()">
+      Sign out
+    </button>
+  </div>
+</section>
+
 <section class="sheet" id="settingsSheet">
   <div class="sheetHead"><b>Settings</b><button class="iconBtn" onclick="closeSheets()">×</button></div>
   <div class="profileBox">
@@ -442,21 +633,145 @@ body.module-open{overflow:hidden}
 </section>
 
 <script>
+
+const STUDIO_API_ORIGIN =
+  location.hostname === "studio.universaldragon.com"
+    ? "https://api-studio.universaldragon.com"
+    : "";
+
+function apiUrl(path) {
+  return `${STUDIO_API_ORIGIN}${path}`;
+}
+
+
+let studioAuthUser = null;
+
+function startGoogleLogin() {
+  const returnTo = `${location.origin}/studio-app.html`;
+
+  location.href =
+    `${apiUrl("/api/auth/google")}` +
+    `?returnTo=${encodeURIComponent(returnTo)}`;
+}
+
+function renderStudioAccount() {
+  const signedIn = Boolean(studioAuthUser);
+
+  const guestIcon = document.getElementById("accountGuestIcon");
+  const headerAvatar = document.getElementById("accountAvatar");
+  const signedOutPanel = document.getElementById("accountSignedOut");
+  const signedInPanel = document.getElementById("accountSignedIn");
+
+  if (guestIcon) {
+    guestIcon.hidden = signedIn;
+  }
+
+  if (headerAvatar) {
+    headerAvatar.hidden = !signedIn;
+
+    if (signedIn) {
+      headerAvatar.src =
+        studioAuthUser.picture || "/qbit-nova-icon-192.png";
+    }
+  }
+
+  if (signedOutPanel) {
+    signedOutPanel.hidden = signedIn;
+  }
+
+  if (signedInPanel) {
+    signedInPanel.hidden = !signedIn;
+  }
+
+  if (!signedIn) {
+    return;
+  }
+
+  const sheetAvatar = document.getElementById("accountSheetAvatar");
+  const accountName = document.getElementById("accountName");
+  const accountEmail = document.getElementById("accountEmail");
+  const accountProvider = document.getElementById("accountProvider");
+
+  if (sheetAvatar) {
+    sheetAvatar.src =
+      studioAuthUser.picture || "/qbit-nova-icon-192.png";
+  }
+
+  if (accountName) {
+    accountName.textContent =
+      studioAuthUser.name || "Google User";
+  }
+
+  if (accountEmail) {
+    accountEmail.textContent =
+      studioAuthUser.email || "";
+  }
+
+  if (accountProvider) {
+    accountProvider.textContent =
+      `${studioAuthUser.provider || "Google"} account connected`;
+  }
+}
+
+async function loadStudioAuth() {
+  try {
+    const response = await fetch(
+      apiUrl("/api/auth/me"),
+      {
+        credentials: "include"
+      }
+    );
+
+    const data = await response.json();
+
+    studioAuthUser =
+      data.authenticated && data.user
+        ? data.user
+        : null;
+  } catch {
+    studioAuthUser = null;
+  }
+
+  renderStudioAccount();
+}
+
+async function studioLogout() {
+  try {
+    await fetch(
+      apiUrl("/api/auth/logout"),
+      {
+        method: "POST",
+        credentials: "include"
+      }
+    );
+  } finally {
+    studioAuthUser = null;
+    renderStudioAccount();
+    closeSheets();
+  }
+}
+
+function openAccount() {
+  openSheet("accountSheet");
+}
+
+window.addEventListener("load", loadStudioAuth);
+
 let currentModuleUrl = "";
 
 function openModule(url, title){
   closeSheets();
   currentModuleUrl = url;
-  document.getElementById("moduleTitle").textContent = title || "Qbit Nova Module";
+  document.getElementById("moduleTitle").textContent = title || "Universal Dragon Studio Module";
   document.getElementById("moduleFrame").src = url;
   document.getElementById("moduleView").classList.add("open");
   document.getElementById("moduleView").setAttribute("aria-hidden","false");
   document.body.classList.add("module-open");
   saveRecentProject({
-    title:title || "Qbit Nova Module",
+    title:title || "Universal Dragon Studio Module",
     url:url,
     type:"module",
-    note:"Opened inside Qbit Nova Studio"
+    note:"Opened inside Universal Dragon Studio"
   });
 }
 
@@ -487,12 +802,12 @@ function filterTools(){const q=document.getElementById('search').value.toLowerCa
 function saveMail(){alert('Studio profile saved safely to Pi5.')}
 function saveSettings(){alert('Studio profile saved safely to Pi5.')}
 if ("serviceWorker" in navigator) { navigator.serviceWorker.register("/sw.js").catch(() => null); }
-async function loadBackendProfile(){try{const res=await fetch('/api/studio/profile');const data=await res.json();const p=data.profile||{};if(document.getElementById('nameInput'))document.getElementById('nameInput').value=p.creator_name||'Aslam';if(document.getElementById('projectInput'))document.getElementById('projectInput').value=p.project_name||'Universal Dragon Studio';if(document.getElementById('publicMailInput'))document.getElementById('publicMailInput').value=p.public_email||'univercialdragon@gmail.com';if(document.getElementById('youtubeMailInput'))document.getElementById('youtubeMailInput').value=p.youtube_email||'aslamaam78@gmail.com'}catch(e){}}
-async function udFinalSaveProfile(){const payload={creator_name:document.getElementById('nameInput')?.value||'Aslam',project_name:document.getElementById('projectInput')?.value||'Universal Dragon Studio',public_email:document.getElementById('publicMailInput')?.value||'univercialdragon@gmail.com',youtube_email:document.getElementById('youtubeMailInput')?.value||'aslamaam78@gmail.com'};try{const res=await fetch('/api/studio/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await res.json();alert(data.status==='profile_saved'?'Studio profile saved safely to Pi5.':'Profile save failed.')}catch(e){alert('Profile save failed. Check server.')}}
+async function loadBackendProfile(){try{const res=await fetch(apiUrl('/api/studio/profile'));const data=await res.json();const p=data.profile||{};if(document.getElementById('nameInput'))document.getElementById('nameInput').value=p.creator_name||'Aslam';if(document.getElementById('projectInput'))document.getElementById('projectInput').value=p.project_name||'Universal Dragon Studio';if(document.getElementById('publicMailInput'))document.getElementById('publicMailInput').value=p.public_email||'univercialdragon@gmail.com';if(document.getElementById('youtubeMailInput'))document.getElementById('youtubeMailInput').value=p.youtube_email||'aslamaam78@gmail.com'}catch(e){}}
+async function udFinalSaveProfile(){const payload={creator_name:document.getElementById('nameInput')?.value||'Aslam',project_name:document.getElementById('projectInput')?.value||'Universal Dragon Studio',public_email:document.getElementById('publicMailInput')?.value||'univercialdragon@gmail.com',youtube_email:document.getElementById('youtubeMailInput')?.value||'aslamaam78@gmail.com'};try{const res=await fetch(apiUrl('/api/studio/profile'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await res.json();alert(data.status==='profile_saved'?'Studio profile saved safely to Pi5.':'Profile save failed.')}catch(e){alert('Profile save failed. Check server.')}}
 window.saveSettings=udFinalSaveProfile;window.saveMail=udFinalSaveProfile;window.addEventListener('load',loadBackendProfile);
-async function loadRecentProjects(){try{const res=await fetch('/api/studio/projects');const data=await res.json();renderRecentProjects(data.projects||[])}catch(e){}}
+async function loadRecentProjects(){try{const res=await fetch(apiUrl('/api/studio/projects'));const data=await res.json();renderRecentProjects(data.projects||[])}catch(e){}}
 function renderRecentProjects(projects){const box=document.getElementById('recentProjectsBox');if(!box)return;box.innerHTML=projects.slice(0,4).map(p=>`<button class="quick" onclick="openProject('${String(p.url||'/').replace(/'/g,'')}')"><span class="projectBadge">${p.type||'project'}</span>${p.title||'Untitled'}<span>${p.note||'Recent Studio work'}</span></button>`).join('')}
-async function saveRecentProject(project){try{await fetch('/api/studio/projects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(project)})}catch(e){}}
+async function saveRecentProject(project){try{await fetch(apiUrl('/api/studio/projects'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(project)})}catch(e){}}
 function openProject(url){
   const target=url||'/';
   if(target.startsWith('/')){
