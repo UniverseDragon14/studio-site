@@ -1,3 +1,6 @@
+import session from "express-session";
+import { OAuth2Client } from "google-auth-library";
+import { randomBytes } from "node:crypto";
 import express from "express";
 import dotenv from "dotenv";
 import path from "path";
@@ -9,6 +12,42 @@ import { fileURLToPath } from "url";
 dotenv.config();
 
 const app = express();
+
+
+// === UNIVERSAL LINKS AASA ROUTE ===
+app.get(
+  [
+    "/.well-known/apple-app-site-association",
+    "/apple-app-site-association"
+  ],
+  (_req, res) => {
+    res.status(200);
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Cache-Control", "no-store");
+    res.sendFile(
+      "/var/www/html/.well-known/apple-app-site-association",
+      { dotfiles: "allow" }
+    );
+  }
+);
+// === END UNIVERSAL LINKS AASA ROUTE ===
+
+
+// QBIT_NOVA_GOOGLE_SESSION
+app.set("trust proxy", 1);
+app.use(session({
+  name: "qbit_nova_session",
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  }
+}));
+
 const PORT = process.env.PORT || 8089;
 const GROQ_MODEL = process.env.GROQ_MODEL || "";
 const DISPLAY_MODEL_NAME = process.env.DISPLAY_MODEL_NAME || "Universal Dragon Studio Brain V1";
@@ -28,6 +67,45 @@ fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 fs.mkdirSync(PRIVATE_DATA_DIR, { recursive: true });
 
 app.use(express.json({ limit: "2mb" }));
+
+// === STRICT STUDIO API CORS ===
+const STUDIO_API_ALLOWED_ORIGINS = new Set([
+  "https://studio.universaldragon.com",
+  "http://localhost:8089",
+  "http://127.0.0.1:8089"
+]);
+
+app.use((req, res, next) => {
+  if (!req.path.startsWith("/api/")) {
+    return next();
+  }
+
+  const origin = req.headers.origin;
+
+  if (origin && STUDIO_API_ALLOWED_ORIGINS.has(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Vary", "Origin");
+  }
+
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS"
+  );
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+// === END STRICT STUDIO API CORS ===
+
 
 // UD_TEXT_OVERLAY_EARLY_ROUTE_V3
 app.post("/api/video/text-overlay", async (req, res) => {
@@ -462,93 +540,6 @@ app.post("/api/video/trim", async (req, res) => {
 
 
 
-app.post("/api/video/text-overlay", async (req, res) => {
-  try {
-    const file = safeName(req.body.file);
-    const rawText = safeText(req.body.text || "Universal Dragon Studio")
-      .replace(/[{}]/g, " ").split("\\").join(" ")
-      .slice(0, 120);
-
-    const start = String(req.body.start || "00:00:00");
-    const duration = String(req.body.duration || "00:00:05");
-    const position = safeText(req.body.position || "bottom");
-    const fontSize = Math.max(18, Math.min(72, Number(req.body.fontSize || 42)));
-
-    if (!file) return res.status(400).json({ error: "file is required." });
-
-    const input = path.join(UPLOAD_DIR, file);
-    if (!input.startsWith(UPLOAD_DIR) || !fs.existsSync(input)) {
-      return res.status(404).json({ error: "Input video not found." });
-    }
-
-    const outputName = `text_${Date.now()}_${file.replace(/\.[^.]+$/, "")}.mp4`;
-    const output = path.join(OUTPUT_DIR, outputName);
-
-    const assName = `overlay_${Date.now()}.ass`;
-    const assPath = path.join(OUTPUT_DIR, assName);
-
-    let alignment = 2; // bottom center
-    let marginV = 70;
-    if (position === "top") { alignment = 8; marginV = 70; }
-    if (position === "center") { alignment = 5; marginV = 0; }
-
-    const ass = `[Script Info]
-ScriptType: v4.00+
-PlayResX: 1280
-PlayResY: 720
-
-[V4+ Styles]
-Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: UDText,Arial,${fontSize},&H00FFFFFF,&H00FFFFFF,&HAA000000,&HAA000000,1,0,0,0,100,100,0,0,3,2,1,${alignment},40,40,${marginV},1
-
-[Events]
-Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-Dialogue: 0,0:00:00.00,9:59:59.00,UDText,,0,0,0,,${rawText}
-`;
-
-    fs.writeFileSync(assPath, ass, "utf8");
-
-    const assForFilter = assPath.split(path.sep).join("/");
-
-    await runCmd("ffmpeg", [
-      "-y",
-      "-ss", start,
-      "-i", input,
-      "-t", duration,
-      "-vf", `subtitles='${assForFilter}'`,
-      "-c:v", "libx264",
-      "-preset", "ultrafast",
-      "-crf", "24",
-      "-pix_fmt", "yuv420p",
-      "-c:a", "aac",
-      "-b:a", "128k",
-      "-movflags", "+faststart",
-      output
-    ]);
-
-    try { fs.unlinkSync(assPath); } catch {}
-
-    res.json({
-      status: "text_overlay_done",
-      engine: "ass_subtitle_overlay",
-      input: file,
-      text: rawText,
-      output: outputName,
-      url: `/videos_output/${outputName}`
-    });
-
-  } catch (err) {
-    res.status(500).json({ error: String(err.message || err).slice(0, 1500) });
-  }
-});
-
-
-
-
-
-
-
-
 app.post("/api/video/extract-audio", async (req, res) => {
   try {
     const file = safeName(req.body.file);
@@ -912,6 +903,509 @@ app.post("/api/images/render-video", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message.slice(0, 1000) });
   }
+});
+
+
+// Universal Dragon Studio hybrid AI chat.
+// Primary: Groq GPT-OSS 120B.
+// Fallback: local Ollama Llama 3.2 on Pi5.
+const STUDIO_AI_ALLOWED_ORIGINS = new Set([
+  "https://studio.universaldragon.com",
+  "http://localhost:8089",
+  "http://127.0.0.1:8089"
+]);
+
+const STUDIO_OLLAMA_URL =
+  process.env.OLLAMA_URL ||
+  "http://127.0.0.1:11434";
+
+const STUDIO_OLLAMA_MODEL =
+  process.env.OLLAMA_MODEL ||
+  "llama3.2:latest";
+
+const STUDIO_GROQ_CHAT_MODEL =
+  process.env.GROQ_MODEL ||
+  "openai/gpt-oss-120b";
+
+function setStudioAiCors(req, res) {
+  const origin = req.headers.origin;
+
+  if (
+    origin &&
+    STUDIO_AI_ALLOWED_ORIGINS.has(origin)
+  ) {
+    res.setHeader(
+      "Access-Control-Allow-Origin",
+      origin
+    );
+
+    res.setHeader(
+      "Access-Control-Allow-Credentials",
+      "true"
+    );
+
+    res.setHeader(
+      "Vary",
+      "Origin"
+    );
+  }
+
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS"
+  );
+}
+
+function withTimeout(milliseconds) {
+  const controller = new AbortController();
+  const timer = setTimeout(
+    () => controller.abort(),
+    milliseconds
+  );
+
+  return {
+    signal: controller.signal,
+    cancel: () => clearTimeout(timer)
+  };
+}
+
+function normalizeStudioMessages(input) {
+  const incoming = Array.isArray(input)
+    ? input
+    : [];
+
+  return incoming
+    .filter(item =>
+      item &&
+      ["user", "assistant"].includes(item.role) &&
+      typeof item.content === "string"
+    )
+    .slice(-12)
+    .map(item => ({
+      role: item.role,
+      content: item.content.slice(0, 6000)
+    }));
+}
+
+function buildStudioSystemPrompt(project) {
+  return [
+    "You are Nova, the AI assistant inside Universal Dragon Studio.",
+    "Help users create and edit images, videos, captions, scripts, thumbnails and project workflows.",
+    "Give clear, practical and mobile-friendly answers.",
+    "Do not claim that an edit, upload or render completed unless the backend confirms it.",
+    "Do not invent timestamps when no transcript or scene analysis exists.",
+    "Use short ordered steps when a workflow is useful.",
+    "Current project context:",
+    JSON.stringify(project || {}).slice(0, 12000)
+  ].join("\n");
+}
+
+async function requestGroqStudioAi(
+  systemPrompt,
+  messages
+) {
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error("groq_not_configured");
+  }
+
+  const timeout = withTimeout(60000);
+
+  try {
+    const response = await fetch(
+      GROQ_API_URL,
+      {
+        method: "POST",
+        headers: {
+          "Authorization":
+            `Bearer ${process.env.GROQ_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: STUDIO_GROQ_CHAT_MODEL,
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt
+            },
+            ...messages
+          ],
+          temperature: 0.35,
+          max_tokens: 1400
+        }),
+        signal: timeout.signal
+      }
+    );
+
+    const data = await response
+      .json()
+      .catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(
+        `groq_http_${response.status}`
+      );
+    }
+
+    const reply =
+      data?.choices?.[0]?.message?.content;
+
+    if (
+      typeof reply !== "string" ||
+      !reply.trim()
+    ) {
+      throw new Error("groq_empty_response");
+    }
+
+    return {
+      provider: "groq",
+      model: STUDIO_GROQ_CHAT_MODEL,
+      reply: reply.trim()
+    };
+  } finally {
+    timeout.cancel();
+  }
+}
+
+async function requestOllamaStudioAi(
+  systemPrompt,
+  messages
+) {
+  const timeout = withTimeout(180000);
+
+  try {
+    const response = await fetch(
+      `${STUDIO_OLLAMA_URL}/api/chat`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: STUDIO_OLLAMA_MODEL,
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt
+            },
+            ...messages
+          ],
+          stream: false,
+          keep_alive: "10m",
+          options: {
+            temperature: 0.2,
+            num_ctx: 1024,
+            num_predict: 350,
+            num_thread: 4
+          }
+        }),
+        signal: timeout.signal
+      }
+    );
+
+    const data = await response
+      .json()
+      .catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(
+        `ollama_http_${response.status}`
+      );
+    }
+
+    const reply = data?.message?.content;
+
+    if (
+      typeof reply !== "string" ||
+      !reply.trim()
+    ) {
+      throw new Error("ollama_empty_response");
+    }
+
+    return {
+      provider: "ollama",
+      model:
+        data?.model ||
+        STUDIO_OLLAMA_MODEL,
+      reply: reply.trim()
+    };
+  } finally {
+    timeout.cancel();
+  }
+}
+
+app.options("/api/ai/chat", (req, res) => {
+  setStudioAiCors(req, res);
+  res.sendStatus(204);
+});
+
+app.options("/api/ai/health", (req, res) => {
+  setStudioAiCors(req, res);
+  res.sendStatus(204);
+});
+
+app.get("/api/ai/health", async (req, res) => {
+  setStudioAiCors(req, res);
+
+  let ollamaReady = false;
+  let ollamaVersion = null;
+
+  const timeout = withTimeout(5000);
+
+  try {
+    const response = await fetch(
+      `${STUDIO_OLLAMA_URL}/api/version`,
+      {
+        signal: timeout.signal
+      }
+    );
+
+    if (response.ok) {
+      const data = await response
+        .json()
+        .catch(() => ({}));
+
+      ollamaReady = true;
+      ollamaVersion =
+        data?.version || null;
+    }
+  } catch {
+    ollamaReady = false;
+  } finally {
+    timeout.cancel();
+  }
+
+  res.json({
+    ok: true,
+    service: "universal-dragon-studio-ai",
+    primary: {
+      provider: "groq",
+      model: STUDIO_GROQ_CHAT_MODEL,
+      configured:
+        Boolean(process.env.GROQ_API_KEY)
+    },
+    fallback: {
+      provider: "ollama",
+      model: STUDIO_OLLAMA_MODEL,
+      ready: ollamaReady,
+      version: ollamaVersion,
+      host: "127.0.0.1"
+    }
+  });
+});
+
+app.post("/api/ai/chat", async (req, res) => {
+  setStudioAiCors(req, res);
+
+  const messages =
+    normalizeStudioMessages(
+      req.body?.messages
+    );
+
+  if (!messages.length) {
+    return res.status(400).json({
+      error: "A chat message is required."
+    });
+  }
+
+  const project =
+    req.body?.project &&
+    typeof req.body.project === "object"
+      ? req.body.project
+      : {};
+
+  const systemPrompt =
+    buildStudioSystemPrompt(project);
+
+  let primaryFailure = null;
+
+  try {
+    const result =
+      await requestGroqStudioAi(
+        systemPrompt,
+        messages
+      );
+
+    return res.json({
+      ok: true,
+      provider: result.provider,
+      model: result.model,
+      fallback: false,
+      reply: result.reply
+    });
+  } catch (error) {
+    primaryFailure =
+      error instanceof Error
+        ? error.message
+        : "groq_unknown_error";
+
+    console.warn(
+      "Studio Groq unavailable; using local fallback:",
+      primaryFailure
+    );
+  }
+
+  try {
+    const result =
+      await requestOllamaStudioAi(
+        systemPrompt,
+        messages
+      );
+
+    return res.json({
+      ok: true,
+      provider: result.provider,
+      model: result.model,
+      fallback: true,
+      reply: result.reply
+    });
+  } catch (error) {
+    const localFailure =
+      error instanceof Error
+        ? error.message
+        : "ollama_unknown_error";
+
+    console.error(
+      "Studio local AI fallback failed:",
+      localFailure
+    );
+
+    return res.status(502).json({
+      ok: false,
+      error:
+        "Both online and local AI providers are unavailable.",
+      primary:
+        primaryFailure ||
+        "groq_unavailable",
+      fallback:
+        "ollama_unavailable"
+    });
+  }
+});
+
+// QBIT_NOVA_GOOGLE_AUTH_ROUTES
+const GOOGLE_LOGIN_FRONTEND = "https://studio.universaldragon.com/login.html";
+const GOOGLE_LOGIN_ORIGIN = "https://studio.universaldragon.com";
+
+function googleOAuthClient() {
+  return new OAuth2Client(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.GOOGLE_REDIRECT_URI
+  );
+}
+
+function safeGoogleReturnTo(value) {
+  try {
+    const url = new URL(String(value || ""));
+    if (url.origin === GOOGLE_LOGIN_ORIGIN) return url.toString();
+  } catch {}
+  return GOOGLE_LOGIN_FRONTEND;
+}
+
+function setGoogleAuthCors(req, res) {
+  if (req.headers.origin === GOOGLE_LOGIN_ORIGIN) {
+    res.setHeader("Access-Control-Allow-Origin", GOOGLE_LOGIN_ORIGIN);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Vary", "Origin");
+  }
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+}
+
+app.options("/api/auth/me", (req, res) => {
+  setGoogleAuthCors(req, res);
+  res.sendStatus(204);
+});
+
+app.options("/api/auth/logout", (req, res) => {
+  setGoogleAuthCors(req, res);
+  res.sendStatus(204);
+});
+
+app.get("/api/auth/google", (req, res) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.GOOGLE_REDIRECT_URI || !process.env.SESSION_SECRET) {
+    return res.status(503).send("Google Login is not configured.");
+  }
+
+  const state = randomBytes(24).toString("hex");
+  req.session.googleOAuthState = state;
+  req.session.googleReturnTo = safeGoogleReturnTo(req.query.returnTo);
+
+  const authUrl = googleOAuthClient().generateAuthUrl({
+    access_type: "online",
+    include_granted_scopes: true,
+    prompt: "select_account",
+    scope: ["openid", "email", "profile"],
+    state
+  });
+
+  req.session.save(error => {
+    if (error) return res.status(500).send("Unable to start Google Login.");
+    res.redirect(authUrl);
+  });
+});
+
+app.get("/api/auth/google/callback", async (req, res) => {
+  if (req.query.error) {
+    return res.redirect(`${GOOGLE_LOGIN_FRONTEND}?error=${encodeURIComponent(String(req.query.error))}`);
+  }
+
+  if (!req.query.state || !req.session.googleOAuthState || req.query.state !== req.session.googleOAuthState) {
+    return res.status(400).send("Google Login state mismatch.");
+  }
+
+  try {
+    const client = googleOAuthClient();
+    const { tokens } = await client.getToken(String(req.query.code || ""));
+    if (!tokens.id_token) return res.status(502).send("Google did not return an ID token.");
+
+    const ticket = await client.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+    const profile = ticket.getPayload();
+    if (!profile?.sub || !profile?.email) return res.status(502).send("Google profile is incomplete.");
+
+    req.session.user = {
+      id: profile.sub,
+      email: profile.email,
+      name: profile.name || profile.email,
+      picture: profile.picture || "",
+      emailVerified: Boolean(profile.email_verified)
+    };
+
+    const returnTo = safeGoogleReturnTo(req.session.googleReturnTo);
+    delete req.session.googleOAuthState;
+    delete req.session.googleReturnTo;
+
+    req.session.save(error => {
+      if (error) return res.status(500).send("Unable to save Google Login.");
+      const separator = returnTo.includes("?") ? "&" : "?";
+      res.redirect(`${returnTo}${separator}login=success`);
+    });
+  } catch (error) {
+    console.error("Google OAuth callback error:", error);
+    res.redirect(`${GOOGLE_LOGIN_FRONTEND}?error=google_login_failed`);
+  }
+});
+
+app.get("/api/auth/me", (req, res) => {
+  setGoogleAuthCors(req, res);
+  res.json({ authenticated: Boolean(req.session.user), user: req.session.user || null });
+});
+
+app.post("/api/auth/logout", (req, res) => {
+  setGoogleAuthCors(req, res);
+  req.session.destroy(error => {
+    res.clearCookie("qbit_nova_session", { httpOnly: true, secure: true, sameSite: "lax" });
+    if (error) return res.status(500).json({ error: "Logout failed." });
+    res.json({ ok: true });
+  });
 });
 
 app.listen(PORT, "0.0.0.0", () => {
