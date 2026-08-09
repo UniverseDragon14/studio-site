@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>UD ClipDesk — Shorts & Reels</title>
+<meta name="description" content="Remote short-form video editing by Universal Dragon Studio." />
+<meta name="theme-color" content="#071018" />
+<style>
+:root{
+  --bg:#071018;--panel:#101925;--panel2:#0b1420;--line:#24354a;
+  --text:#f7f9fc;--muted:#a8b6c9;--cyan:#42d9ff;--blue:#5b6cff;
+  --good:#64e49a;--safeT:env(safe-area-inset-top,0px);--safeB:env(safe-area-inset-bottom,0px)
+}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.app{height:100dvh;display:grid;grid-template-rows:auto 1fr auto;overflow:hidden;background:radial-gradient(circle at 50% -10%,rgba(66,217,255,.18),transparent 40%),var(--bg)}
+.top{padding:calc(10px + var(--safeT)) 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(7,16,24,.92);backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}.logo{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,var(--cyan),var(--blue));font-size:23px;box-shadow:0 0 28px rgba(66,217,255,.18)}.brand b{font-size:18px;white-space:nowrap}.mini{border:1px solid var(--line);background:#111c29;color:var(--text);border-radius:14px;padding:11px 13px;font-weight:850}
+.main{min-height:0;position:relative;overflow:hidden}.view{position:absolute;inset:0;padding:16px;display:none}.view.active{display:flex;flex-direction:column;justify-content:center;gap:14px}
+.eyebrow{display:inline-flex;align-self:flex-start;border:1px solid rgba(66,217,255,.35);color:var(--cyan);border-radius:999px;padding:7px 11px;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}.hero h1{font-size:clamp(38px,10vw,58px);line-height:.94;letter-spacing:-1.8px;margin:0}.hero h1 span{color:var(--cyan)}.hero p{margin:0;color:var(--muted);font-size:clamp(14px,4vw,18px);line-height:1.45;max-width:680px}.priceRow{display:grid;grid-template-columns:1fr 1fr;gap:10px}.price{border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border-radius:20px;padding:13px}.price strong{display:block;font-size:23px}.price span{color:var(--muted);font-size:12px}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.feat{border:1px solid var(--line);background:var(--panel);border-radius:17px;padding:11px;text-align:center;font-size:12px;font-weight:850}.feat i{display:block;font-style:normal;font-size:20px;margin-bottom:4px}
+.primary{border:0;background:linear-gradient(135deg,var(--cyan),#9cecff);color:#041019;border-radius:18px;padding:15px 18px;font-weight:950;font-size:17px;box-shadow:0 14px 32px rgba(66,217,255,.18)}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:10px}.step{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:14px;min-height:120px}.num{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:var(--cyan);color:#041019;font-weight:950;margin-bottom:9px}.step b{display:block;margin-bottom:4px}.step p{margin:0;color:var(--muted);font-size:12px;line-height:1.35}
+.formCard{border:1px solid var(--line);background:var(--panel);border-radius:24px;padding:15px;display:grid;gap:11px}.field{display:grid;gap:5px}.field label{font-size:11px;color:var(--muted);font-weight:850}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:#08111b;color:var(--text);border-radius:14px;padding:12px;outline:none}.field textarea{height:94px;resize:none}.formActions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.secondary{border:1px solid var(--line);background:#0b1521;color:var(--text);border-radius:16px;padding:13px;font-weight:900}.status{min-height:18px;color:var(--good);font-size:11px;font-weight:800}.formStep{display:none}.formStep.active{display:grid;gap:11px}
+.nav{padding:8px 12px calc(9px + var(--safeB));display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid rgba(255,255,255,.07);background:rgba(7,16,24,.96)}.nav button{border:0;background:transparent;color:var(--muted);padding:9px 4px;border-radius:13px;font-size:12px;font-weight:900}.nav button span{display:block;font-size:20px;margin-bottom:2px}.nav button.active{background:#111d2a;color:var(--cyan)}
+.small{color:var(--muted);font-size:11px;line-height:1.35;margin:0}
+@media(max-height:720px){.top{padding-top:calc(6px + var(--safeT));padding-bottom:6px}.logo{width:40px;height:40px}.view{padding:11px}.view.active{gap:10px}.hero h1{font-size:38px}.hero p{font-size:13px}.feat{padding:8px}.step{min-height:98px;padding:10px}.step p{font-size:10.5px}.field input,.field select,.field textarea{padding:9px}.field textarea{height:70px}.formCard{padding:11px;gap:8px}.formStep.active{gap:8px}.primary,.secondary{padding:11px}.nav{padding-top:5px}.nav button span{font-size:17px}}
+@media(max-width:370px){.features{grid-template-columns:1fr}.feat:nth-child(2),.feat:nth-child(3){display:none}.hero h1{font-size:36px}.brand b{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="logo">▶</div><b>UD ClipDesk</b></div>
+    <button class="mini" data-go="request">Start</button>
+  </header>
+
+  <main class="main">
+    <section class="view active hero" id="view-offer">
+      <span class="eyebrow">Remote video editing</span>
+      <h1>One video in.<br><span>Clean Shorts out.</span></h1>
+      <p>Send your footage. Get a polished vertical clip, hook text, title and hashtags. Manual review before delivery.</p>
+      <div class="priceRow">
+        <div class="price"><strong>AED 49</strong><span>1 Launch Clip · first 3 customers</span></div>
+        <div class="price"><strong>AED 149</strong><span>3-clip Creator Pack</span></div>
+      </div>
+      <div class="features">
+        <div class="feat"><i>✂️</i>Clean trim</div>
+        <div class="feat"><i>📱</i>Vertical ready</div>
+        <div class="feat"><i>✍️</i>Hook + copy</div>
+      </div>
+      <button class="primary" data-go="request">Request a clip</button>
+      <p class="small">Private workflow · Customer-owned footage only · No automatic posting</p>
+    </section>
+
+    <section class="view" id="view-how">
+      <span class="eyebrow">4 simple steps</span>
+      <div class="steps">
+        <article class="step"><div class="num">1</div><b>Send brief</b><p>Tell us the goal, platform and language.</p></article>
+        <article class="step"><div class="num">2</div><b>Confirm</b><p>Price and deliverable are agreed first.</p></article>
+        <article class="step"><div class="num">3</div><b>Edit</b><p>Clip is processed and manually reviewed.</p></article>
+        <article class="step"><div class="num">4</div><b>Deliver</b><p>Finished files are shared privately.</p></article>
+      </div>
+      <button class="primary" data-go="request">Start request</button>
+    </section>
+
+    <section class="view" id="view-request">
+      <span class="eyebrow">Request</span>
+      <form class="formCard" id="requestForm">
+        <div class="formStep active" id="form1">
+          <div class="field"><label for="name">Name or business</label><input id="name" name="name" maxlength="80" required placeholder="Your name or business"></div>
+          <div class="field"><label for="package">Package</label><select id="package" name="package"><option>Launch Clip — AED 49</option><option>Creator Pack — AED 149</option><option>Business Batch — Quote</option></select></div>
+          <div class="field"><label for="platform">Platform</label><select id="platform" name="platform"><option>Instagram Reels</option><option>YouTube Shorts</option><option>TikTok</option><option>Facebook Reels</option><option>Multiple platforms</option></select></div>
+          <button class="primary" type="button" id="nextBtn">Next</button>
+        </div>
+        <div class="formStep" id="form2">
+          <div class="field"><label for="link">Private view-only source link (optional)</label><input id="link" name="link" type="url" placeholder="https://..."></div>
+          <div class="field"><label for="brief">What should the clip achieve?</label><textarea id="brief" name="brief" maxlength="800" required placeholder="Audience, language, style, product or message"></textarea></div>
+          <div class="formActions"><button class="secondary" type="button" id="backBtn">Back</button><button class="primary" type="submit">Prepare email</button></div>
+        </div>
+        <div class="status" id="status" aria-live="polite"></div>
+      </form>
+      <p class="small">Do not send passwords or payment credentials. Use footage you own or have permission to edit.</p>
+    </section>
+  </main>
+
+  <nav class="nav" aria-label="ClipDesk navigation">
+    <button class="active" data-view="offer"><span>◉</span>Offer</button>
+    <button data-view="how"><span>▦</span>How</button>
+    <button data-view="request"><span>✉</span>Request</button>
+  </nav>
+</div>
+<script>
+const views=[...document.querySelectorAll('.view')];
+const nav=[...document.querySelectorAll('.nav button')];
+function show(name){views.forEach(v=>v.classList.toggle('active',v.id===`view-${name}`));nav.forEach(b=>b.classList.toggle('active',b.dataset.view===name));}
+nav.forEach(b=>b.addEventListener('click',()=>show(b.dataset.view)));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));
+const form1=document.getElementById('form1'),form2=document.getElementById('form2'),status=document.getElementById('status');
+document.getElementById('nextBtn').addEventListener('click',()=>{if(!document.getElementById('name').value.trim()){status.textContent='Enter your name or business first.';return;}status.textContent='';form1.classList.remove('active');form2.classList.add('active');});
+document.getElementById('backBtn').addEventListener('click',()=>{form2.classList.remove('active');form1.classList.add('active');status.textContent='';});
+document.getElementById('requestForm').addEventListener('submit',e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.currentTarget).entries());const subject=`UD ClipDesk request — ${v.package}`;const body=[`Name / business: ${v.name}`,`Package: ${v.package}`,`Platform: ${v.platform}`,`Private source link: ${v.link||'Will provide after confirmation'}`,'','Project brief:',v.brief,'','I confirm that I own the footage or have permission to use it.'].join('\n');status.textContent='Email request prepared.';location.href=`mailto:univercialdragon@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;});
+</script>
+</body>
+</html>
