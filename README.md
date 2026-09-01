@@ -1,54 +1,59 @@
 # Universal Dragon Studio
 
-Creator: Aslam  
-GitHub: https://github.com/UniverseDragon14  
-Public Website: https://universedragon14.github.io/  
-Studio Domain: https://studio.universaldragon.com/
+Local-first web studio for project notes, image/video interfaces, FFmpeg media operations, and Groq-assisted planning.
 
-## Purpose
+## Current contents
 
-Universal Dragon Studio is Project Two in the Universal Dragon roadmap.
+- main Studio browser application
+- image, video, timeline, and AI-video pages
+- installable web-app manifests and service worker
+- Express API server
+- local JSON profile and recent-project storage
+- uploaded and generated media directories created at runtime
 
-It is the creator-tools layer for building practical websites, web apps, automation workflows, video/photo creator tools, AI-assisted planning, and safe build systems under the Universal Dragon / NOVA / EVE / UDOS identity.
+## API capabilities
 
-## Project Role
+| Area | Routes/behavior |
+|---|---|
+| Studio state | read/update profile and recent projects; clear project list |
+| Health | reports Studio/FFmpeg configuration state |
+| Build planning | sends a bounded request to Groq when configured |
+| Upload | accepts one video file |
+| Video trim | runs FFmpeg with fixed argument construction |
+| Audio extraction | runs FFmpeg |
+| Text overlay | creates an ASS subtitle file and runs FFmpeg |
+| AI plan | requests a model-generated editing plan; it does not edit the file by itself |
 
-- **Project One:** NOVA Guardian Core — safe brain, approval, backup, validation, rollback, learning.
-- **Project Two:** Universal Dragon Studio — creator tools for websites, apps, video, photo, content, and automation.
-- **Project Three:** Dragon Eye — camera, OpenCV, visual understanding, and hardware perception later.
-- **System Layer:** UDOS — assistant-based control layer above apps, tools, files, and devices.
+## Run locally
 
-## Studio V1 Scope
+Requirements:
 
-Studio V1 is a public landing and planning interface. It should stay safe and public-friendly.
+- Node.js and npm
+- FFmpeg available on PATH
+- optional Groq API key for AI routes
 
-Planned modules:
+~~~bash
+npm install
+cp .env.example .env
+npm start
+~~~
 
-1. Website builder planning
-2. App builder planning
-3. AI automation planning
-4. Video editing workflow roadmap
-5. Photo editing workflow roadmap
-6. Long-video to shorts workflow roadmap
-7. Captions, titles, descriptions, and thumbnail planning
-8. Safe build queue with approval-first workflow
+The default port is 8089.
 
-## Safety Rules
+Environment settings include SESSION_SECRET, GROQ_API_KEY, optional GROQ_MODEL, optional DISPLAY_MODEL_NAME, and PORT.
 
-- Do not expose API keys.
-- Do not expose Pi IP addresses.
-- Do not expose Cloudflare tunnel credentials.
-- Do not expose private backend logs.
-- Public site is for proof, branding, and project direction only.
-- Real backend, uploads, renders, model keys, and private automation must stay on the Pi5/private server.
+## Data and output
 
-## Current Status
+Runtime state is stored under a private local data directory. Uploaded videos and generated outputs remain on the host until an operator removes them. Back up important work and define retention limits before regular use.
 
-Status: Project Two active  
-Mode: public landing + safe roadmap  
-Backend: private/Pi5 later  
-Build direction: CapCut-style creator studio plus AI brain and automation
+## Security boundary
 
-## Keywords
+This is not ready for direct public exposure.
 
-Universal Dragon, Universal Dragon Aslam, Universal Dragon Studio, NOVA, EVE, UDOS, Dragon Eye, AI websites, app builder, video editor, photo editor, automation, defensive security, Raspberry Pi, system design, Abu Dhabi UAE.
+- API routes do not currently enforce a logged-in user.
+- A session cookie is configured, but it is not used as route authorization.
+- CORS headers are not authentication.
+- Upload size is currently very large, and media processing can consume substantial disk, CPU, and memory.
+- Add authenticated ownership, CSRF protection, content-type validation, quotas, cleanup, isolated FFmpeg workers, rate limits, and audit logs before internet or multi-user deployment.
+
+AI output is a plan/code suggestion, not proof of a successful media edit or deployment.
